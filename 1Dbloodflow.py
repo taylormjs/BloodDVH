@@ -91,9 +91,15 @@ def make_blood(num_blood_cells):
 def find_blood():
     '''finds which blood cells are in the path of the beam
     ''' 
-    if blood.position is in        
+    if position.dose(blood.position) !=  0:
+        blood.getting_dose = True
+        blood.dose = position.dose(blood.position)
         
-def add_constant_dose(all_bloods, dose):
+        
+        
+               
+        
+def add_constant_dose(all_bloods):
     '''
     add a constant dose of radiation to all blood within the radiation beam
     blood - a list of blood objects that are
@@ -101,13 +107,15 @@ def add_constant_dose(all_bloods, dose):
 
     for i in all_bloods:
         if i.getting_dose == True;
-            i.setdose(dose)
+            i.setdose(i.dose)
     
 def bloodflow(blood,position,dt):
-    velocity = position(blood.position)
-    x = blood.position[0]
-    y = blood.position[1]
-    z = blood.position[3]
+    vx = positon.vx(blood.position)
+    vy = positon.vy(blood.position)
+    vz = positon.vz(blood.position)
+    blood.x = blood.x + dt * vx
+    blood.y = blood.y + dt * vy
+    blood.z = blood.z + dt * vz
 
 
 def simulate_blood_flow(all_bloods,Positions,total_time, dt):

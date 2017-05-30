@@ -3,7 +3,7 @@
 """
 Created on Tue May 30 10:50:21 2017
 
-@author: taylorsorenson, 
+@author: taylorsorenson, zhaoqiwang
 """
 
 #Attempting to push to github

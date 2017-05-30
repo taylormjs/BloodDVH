@@ -9,6 +9,8 @@ Created on Tue May 30 10:50:21 2017
 import numpy as np 
 import math
 import random
+import readDoses
+
 #Attempting to push to github
 
 
@@ -35,20 +37,26 @@ class Blood(object):
 class Position(object):
     '''A position within the blood vessel
     '''
-    def __init__(self, x, y, z, dose):
+    def __init__(self, x, y, z):
         #assumes velocity and position are tuples in all three dimensions
         #in 1D case, vy and vz are 0 --> velocity = (vx, 0, 0)
         self.x = x
         self.y = y
         self.z = z
         self.position = (self.x, self.y, self.z)
-        self.dose = dose #does this need to be here?
         
     def get_position(self):
         return self.position    
     
-    def update_position(self, velocity):
-        pass
+    def get_new_position(self, vx,vy,vz, dt):
+        #dt is the change in time dt
+        old_x, old_y, old_z = self.x, self.y, self.z
+        dx = vx * dt
+        dy = vy * dt
+        dz = vz * dt
+        
+        new_x, new_y, new_z = (old_x + dx), (old_y + dy), (old_z + dz)
+        return Position (new_x, new_y, new_z)
         
 class const_vector_field(object):
         #assumes the velocity everywhere is constant in one direction
@@ -61,25 +69,30 @@ class const_vector_field(object):
             self.vy = vy
             self.vz = vz
             self.velocity = (self.vx, self.vy, self.vz)
-            #create vector field, all of which have the same (and constant) velocity 
-            self.field = np.zeros((z_dim,y_dim, x_dim)) + self.vx            
+            #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z
+            self.vx_field = np.zeros((z_dim,y_dim, x_dim)) + self.vx   
+            self.vy_field = np.zeros((z_dim,y_dim, x_dim)) + self.vy  
+            self.vz_field = np.zeros((z_dim,y_dim, x_dim)) + self.vz   
         
         def get_velocity(self):
             return self.velocity
         
-        def get_v_at_position(self,pos):
-            x = pos.get_position()[0]
-            y = pos.get_position()[1]
-            z = pos.get_position()[2]
-            return self.field[x][y][z]
+        def get_vx_at_position(self,x,y,z):
+            return self.vx_field[x][y][z]
         
-        def get_field(self):
-            return self.field
+        def get_vy_at_position(self,x,y,z):
+            return self.vy_field[x][y][z]
+        
+        def get_vz_at_position(self,x,y,z):
+            return self.vz_field[x][y][z]
+        
+        def get_velocity_fields(self):
+            return [self.vx_field, self.vy_field, self.vz_field]
 
 
-field = const_vector_field(10,1,1,5.2)
-print(field.get_field())
-print(field.get_v_at_position((0,0,1)))
+#field = const_vector_field(10,1,1,5.2)
+#print(field.get_field())
+#print(field.get_v_at_position((0,0,1)))
 
 
 

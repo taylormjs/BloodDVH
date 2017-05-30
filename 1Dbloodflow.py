@@ -11,19 +11,25 @@ import math
 import random
 import readDoses
 
+#Attempting to push to github
+
+
+
 class Blood(object):
     ''' A Blood cell with an initial position (and velocity)
     '''
     def __init__(self, position, init_dose = 0):
         self.position = position
         self.dose_added = init_dose
-        
-    def get_dose(self):
-        return self.dose_added
+        self.getting_dose = False;
+
      
     def set_dose(self,dose):
         self.dose_added += dose
         
+    def get_dose(self):
+        return self.dose_added
+
     def get_position(self):
         return self.position
     
@@ -97,18 +103,38 @@ def make_blood(num_blood_cells):
         
 def find_blood():
     '''finds which blood cells are in the path of the beam
-    '''       
+    ''' 
+    if blood.position is in        
         
-def add_constant_dose(blood, dose):
+def add_constant_dose(all_bloods, dose):
     '''
     add a constant dose of radiation to all blood within the radiation beam
     blood - a list of blood objects that are
     '''
+
+    for i in all_bloods:
+        if i.getting_dose == True;
+            i.setdose(dose)
+    
+def bloodflow(blood,position,dt):
+    velocity = position(blood.position)
+    x = blood.position[0]
+    y = blood.position[1]
+    z = blood.position[3]
+
+
+def simulate_blood_flow(all_bloods,Positions,total_time, dt):
+    t = 0;
+    while t <= total_time:
+        add_constant_dose(all_bloods,dose) 
+        blood_flow(all_bloods,)
+        t = t + dt
     #time?
     pass 
 
 def simulate_blood_flow(total_time, dt):
     pass
+
         
 def make_pdf(blood):
     pass

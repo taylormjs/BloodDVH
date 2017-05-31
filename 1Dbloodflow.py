@@ -132,59 +132,6 @@ class const_vector_field(object):
 #print(field.get_v_at_position((0,0,1)))
 
 
-
-#def make_blood(num_blood_cells):
-#    '''makes num_blood_cells objects and gives them all an initial position
-#    '''
-#    
-#        
-#def find_blood():
-#    '''finds which blood cells are in the path of the beam
-#    ''' 
-##    if blood.position is in        
-#        
-#def add_constant_dose(all_bloods, dose):
-#    '''
-#    add a constant dose of radiation to all blood within the radiation beam
-#    blood - a list of blood objects that are
-#    '''
-#
-#    for i in all_bloods:
-#        if i.getting_dose == True;
-#            i.setdose(dose)
-#    
-#def bloodflow(blood,position,dt):
-#    velocity = position(blood.position)
-#    x = blood.position[0]
-#    y = blood.position[1]
-#    z = blood.position[3]
-#
-#
-#def simulate_blood_flow(all_bloods,Positions,total_time, dt):
-#    t = 0;
-#    while t <= total_time:
-#        add_constant_dose(all_bloods,dose) 
-#        blood_flow(all_bloods,)
-#        t = t + dt
-#    #time?
-#    pass 
-#
-#def simulate_blood_flow(total_time, dt):
-#    pass
-#
-#        
-#def make_pdf(blood):
-#    pass
-#
-#
-#def make_cdf():
-#    pass
-#
-#def make_dvh():
-#    pass
-#        
-#        
-    
         
 
 

@@ -8,8 +8,8 @@ Created on Tue May 30 10:50:21 2017
 
 import numpy as np 
 import math
-import random
-import readDoses
+#import random
+#import readDoses
 
 #Attempting to push to github
 
@@ -22,13 +22,14 @@ class Blood(object):
         self.position = position
         self.dose_added = init_dose
         self.getting_dose = False;
+        self.dose_recive = 0
 
         
     def get_dose(self):
         return self.dose_added
     
-    def add_dose(self,dose):
-        self.dose_added += dose
+    def add_dose(self):
+        self.dose_added += self.dose_recive
 
     def get_position(self):
         return self.position
@@ -36,7 +37,16 @@ class Blood(object):
     def find_new_position(self, position):
         self.position = position
         
-    
+    def current_dose_level(self,dose_matrix):
+        '''return dose that each unit of blood gets in a dose_matrix
+        '''
+        self.dose_recive = 0
+        position = self.get_position()
+        x = position.x
+        y = position.y
+        z = position.z
+        dose = dose_matrix[x][y][z]
+        self.dose_recive = dose
 #    dose = dose_matrix[1][2][4] 
         
     
@@ -44,10 +54,6 @@ class Blood(object):
 class Position(object):
     '''A position within the blood vessel. 
     '''
-    def __init__(self, x, y, z):
-        #assumes velocity and position are tuples in all three dimensions
-        #in 1D case, vy and vz are 0 --> velocity = (vx, 0, 0)
-
     def __init__(self, x, y, z): #assumes x, y, and z are floats
         self.x = x
         self.y = y
@@ -57,16 +63,12 @@ class Position(object):
     def get_position(self):
         return self.position 
     
-    def get_x():
+    def get_x(self):
         return self.x
-    
-    def get_y():
+    def get_y(self):
         return self.y
-    
-    def get_z():
+    def get_z(self):
         return self.z
-    
-
     def get_new_position(self, vx,vy,vz, dt):#change to units rather than actual distance
         #dt is the change in time dt
         old_x, old_y, old_z = self.get_x(), self.get_y(), self.get_z()
@@ -132,48 +134,57 @@ class const_vector_field(object):
 
 
 
-def make_blood(num_blood_cells):
+def make_blood(num_blood_cells,x_max=100,y_max=100,z_max=100):
     '''makes num_blood_cells objects and gives them all an initial position
     '''
-    
+    bloods =[]
+    x = np.random.randint(0,x_max,num_blood_cells)
+    y = np.random.randint(0,y_max,num_blood_cells)
+    z = np.random.randint(0,z_max,num_blood_cells)
+    for i in range(num_blood_cells):
+        position = Position(x[i],y[i],z[i])
+        blood = Blood(position)
+        bloods += [blood]
         
-def find_blood():
-    '''finds which blood cells are in the path of the beam
-    ''' 
-    if position.dose(blood.position) !=  0:
-        blood.getting_dose = True
-        blood.dose = position.dose(blood.position)
+    return bloods
         
+
         
         
                
         
-def add_constant_dose(all_bloods):
+def add_dose_for_allblood(all_bloods,dose_matrix):
     '''
     add a constant dose of radiation to all blood within the radiation beam
     blood - a list of blood objects that are
     '''
 
     for i in all_bloods:
-        if i.getting_dose == True;
-            i.setdose(i.dose)
+        i.current_dose_level(dose_matrix)
+        i.add_dose()
     
-def bloodflow(blood,position,dt):
-    vx = positon.vx(blood.position)
-    vy = positon.vy(blood.position)
-    vz = positon.vz(blood.position)
-    blood.x = blood.x + dt * vx
-    blood.y = blood.y + dt * vy
-    blood.z = blood.z + dt * vz
+def bloods_flow(all_bloods, vector_field,dt):
+    for i in all_bloods:
+        position = i.get_position()
+        x = position.x
+        y = position.y
+        z = position.z
+        vx = vector_field.get_vx_at_position(x,y,z)
+        vy = vector_field.get_vy_at_position(x,y,z)
+        vz = vector_field.get_vz_at_position(x,y,z)
+        new_position = position.get_new_position(vx,vy,vz, dt)
+        i.find_new_position(new_position)
+    
 
-def simulate_blood_flow(all_bloods,Positions,total_time, dt):
+def simulate_blood_flow(all_bloods,vector_field,dose_matrix,total_time, dt):
+    "simulate the blood flow in some given dose matrix over some time"
     t = 0;
     while t <= total_time:
-        add_constant_dose(all_bloods,dose) 
-        blood_flow(all_bloods,)
+        add_dose_for_allblood(all_bloods,dose_matrix) 
+        bloods_flow(all_bloods,vector_field,dt)
         t = t + dt
-    #time?
-    pass 
+ 
+    return all_bloods 
         
 def make_pdf(blood):
     pass
@@ -185,10 +196,14 @@ def make_cdf():
 def make_dvh():
     pass
         
-        
+def test_blood_flow(total_t,dt):
+    '''generate blood object and vector fields and run the simulations'''
+    all_bloods = make_blood(1000,x_max=100,y_max=100,z_max=100)
+    vector_field = const_vector_field(120,120,120,1)
+    dose_matrix =  np.zeros((120,120, 120)) + 1
     
-
-
+    new_all_bloods = simulate_blood_flow(all_bloods,vector_field,dose_matrix,total_t, dt)
+    return new_all_bloods
 #field = const_vector_field(10,1,1,5.2)
 #print(field.get_field())
 #print(field.get_v_at_position((0,0,1)))

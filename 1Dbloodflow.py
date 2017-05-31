@@ -7,13 +7,13 @@ Created on Tue May 30 10:50:21 2017
 """
 
 import numpy as np 
+from matplotlib import pyplot as plt
 import math
 import random
 import readDoses
+random.seed(1)
 
-#Attempting to push to github
-
-
+print('f1' in mat)
 
 class Blood(object):
     ''' A Blood cell with an initial position (and velocity)
@@ -44,11 +44,9 @@ class Blood(object):
 class Position(object):
     '''A position within the blood vessel. 
     '''
-    def __init__(self, x, y, z):
-        #assumes velocity and position are tuples in all three dimensions
-        #in 1D case, vy and vz are 0 --> velocity = (vx, 0, 0)
-
-    def __init__(self, x, y, z): #assumes x, y, and z are floats
+    def __init__(self, x, y, z): 
+        #assumes x, y, and z are int, representing a box within the vector field
+        #NOT REPRESENTING an exact location in the x, y, and z
         self.x = x
         self.y = y
         self.z = z
@@ -73,8 +71,9 @@ class Position(object):
         dx = vx * dt
         dy = vy * dt
         dz = vz * dt
-        
-        new_x, new_y, new_z = (old_x + dx), (old_y + dy), (old_z + dz)
+        #make the new positions units within the vector field, hence use math.floor
+        new_x, new_y, new_z = math.floor(old_x + dx), math.floor(old_y + dy), \
+                                        math.floor(old_z + dz)
         return Position (new_x, new_y, new_z)
 
         
@@ -122,9 +121,15 @@ class const_vector_field(object):
         def is_position_in_dose_field(self, position):
             '''find which x, y, and z coordinate the position is at within the field'''
             x = math.floor(position.get_x()) #math.floor makes the position an int
-            y = math.floor(position.get_y())
+            y = math.floor(position.get_y()) #TODO - math.floor not really needed
             z = math.floor(position.get_z())
-            return self.dose_matrix[x][y][z] != 0
+            return self.dose_matrix[x][y][z] != 0 #if dose is nonzero, must be in dose field
+        
+        def is_position_in_vector_field(self, position):
+            x = position.get_x()
+            y = position.get_y() 
+            z = position.get_z()
+            return (0 <= x <= x_lim and 0 <= y <= y_lim and 0 <= z <= z_lim)
 
 #field = const_vector_field(10,1,1,5.2)
 #print(field.get_field())
@@ -147,15 +152,15 @@ def find_blood():
         
                
         
-def add_constant_dose(all_bloods):
-    '''
-    add a constant dose of radiation to all blood within the radiation beam
-    blood - a list of blood objects that are
-    '''
-
-    for i in all_bloods:
-        if i.getting_dose == True;
-            i.setdose(i.dose)
+#def add_constant_dose(all_bloods):
+#    '''
+#    add a constant dose of radiation to all blood within the radiation beam
+#    blood - a list of blood objects that are
+#    '''
+#
+#    for i in all_bloods:
+#        if i.getting_dose == True;
+#            i.setdose(i.dose)
     
 def bloodflow(blood,position,dt):
     vx = positon.vx(blood.position)
@@ -174,18 +179,109 @@ def simulate_blood_flow(all_bloods,Positions,total_time, dt):
     #time?
     pass 
         
-def make_pdf(blood):
-    pass
-
-
-def make_cdf():
-    pass
-
-def make_dvh():
-    pass
-        
-        
+def make_pdf(blood_cells):
+    '''make a probability density function which will graph blood dose vs. 
+    volume of blood (which will be fraction of total blood for 1D)
+    Assumes blood_cells is a list of blood objects, all of which have varying
+    doses
+    '''
+    #find the doses of all the cells, append to doses list
+    total = len(blood_cells)
+    doses = []
+    for cell in blood_cells:
+        doses.append(cell.get_dose())
+    hist, bins = np.histogram(doses, bins='auto', density=False) #normed = True instead?
+    print('hist:', hist)
+    print('bins:', bins)
+    bin_centers = (bins[1:]+bins[:-1])*0.5
+    return (bin_centers,hist) #returned this pay to make easier to plot later
     
+def plot_pdf(blood_cells):
+    '''plots the data from make_pdf'''
+    #plot these doses on a histogram
+    bin_centers, hist = make_pdf(blood_cells)
+    plt.figure()
+    plt.title("Probabilty Density Function")
+    plt.xlabel("Dose (Gray)")
+    plt.ylabel("Frequency")
+    plt.plot(bin_centers, hist)
+    
+
+
+def test_pdf(num_blood_cells):
+    '''tests makepdf and plots pdf
+    '''
+    blood_cells = []
+    for b in range(num_blood_cells):
+        #give each random position
+        x,y,z = random.randint(0,5), random.randint(0,5), random.randint(0,5)
+        dose = random.gauss(3, .5)
+        pos = Position(x,y,z)
+        blood_cell = Blood(pos)
+        blood_cell.add_dose(dose)
+        blood_cells.append(blood_cell)
+    plot_pdf(blood_cells)
+         
+
+
+def make_cdf(blood_cells):
+    '''make the cumulative density function'''
+    #create new numpy array to plot
+    bin_centers, hist = make_pdf(blood_cells)
+    cumsum = np.cumsum(hist)
+    plt.figure()
+    plt.title("Cumulative Density Function")
+    plt.xlabel("Dose (Gray)")
+    plt.ylabel("% of Blood Cells")
+    plt.plot(bin_centers, cumsum)
+ 
+def test_cdf(num_blood_cells):
+    '''tests make_cdf and plots cdf
+    '''
+    blood_cells = []
+    for b in range(num_blood_cells):
+        #give each random position
+        x,y,z = random.randint(0,5), random.randint(0,5), random.randint(0,5)
+        dose = random.gauss(5,1)
+        pos = Position(x,y,z)
+        blood_cell = Blood(pos)
+        blood_cell.add_dose(dose)
+        blood_cells.append(blood_cell)
+    make_cdf(blood_cells)
+
+
+def make_dvh(blood_cells):
+    bin_centers, hist = make_pdf(blood_cells)
+    dvh = np.cumsum(hist)
+    for i in range(len(dvh)):
+        dvh[i] = 100 - dvh[i]
+    return (bin_centers,dvh)
+    
+    
+
+        
+def test_dvh(num_blood_cells):      
+    blood_cells = []
+    for b in range(num_blood_cells):
+        #give each random position
+        x,y,z = random.randint(0,5), random.randint(0,5), random.randint(0,5)
+        dose = random.gauss(5,1)
+        pos = Position(x,y,z)
+        blood_cell = Blood(pos)
+        blood_cell.add_dose(dose)
+        blood_cells.append(blood_cell)
+    bin_centers, dvh = make_dvh(blood_cells)
+    plt.figure()
+    plt.title("Dose-Volume Histogram")
+    plt.xlabel("Dose (Gray)")
+    plt.ylabel("Volume (%)")
+    plt.plot(bin_centers, dvh)
+    
+ 
+num_blood_cells = 100
+test_pdf(num_blood_cells)
+test_cdf(num_blood_cells)
+test_dvh(num_blood_cells) 
 
 
 #field = const_vector_field(10,1,1,5.2)

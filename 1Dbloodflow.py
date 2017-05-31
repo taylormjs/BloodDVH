@@ -49,8 +49,12 @@ class Blood(object):
         dose = dose_matrix[x][y][z]
         self.dose_recive = dose
 #    dose = dose_matrix[1][2][4] 
-        
-    
+#    def __str__(self):
+#        print("Blood at position", self.get_position(), "w/ Dose of ", self.get_dose()
+#       
+#pos = Position(1,2,3)
+#blood_1 = Blood(pos, 4)
+#print(blood_1)
 
 class Position(object):
     '''A position within the blood vessel. 
@@ -137,7 +141,7 @@ class const_vector_field(object):
             x = position.get_x()
             y = position.get_y() 
             z = position.get_z()
-            return (0 <= x <= x_lim and 0 <= y <= y_lim and 0 <= z <= z_lim)
+            return (0 <= x <= self.x_dim and 0 <= y <= self.y_dim and 0 <= z <= self.z_dim)
 
 #field = const_vector_field(10,1,1,5.2)
 #print(field.get_field())
@@ -192,6 +196,19 @@ def simulate_blood_flow(all_bloods,vector_field,dose_matrix,total_time, dt):
         t = t + dt
  
     return all_bloods 
+
+
+def test_blood_flow(total_t,dt):
+    '''generate blood object and vector fields and run the simulations'''
+    all_bloods = make_blood(10000,x_max=100,y_max=100,z_max=100)
+    vector_field = const_vector_field(120,120,120,1)
+    #make a matrix of random values between 0 and 1
+    dose_matrix =  np.random.random((120,120, 120))
+    
+    new_all_bloods = simulate_blood_flow(all_bloods,vector_field,dose_matrix,total_t, dt)
+    return new_all_bloods
+
+
         
 def make_pdf(blood_cells):
     '''make a probability density function which will graph blood dose vs. 
@@ -205,35 +222,28 @@ def make_pdf(blood_cells):
     for cell in blood_cells:
         doses.append(cell.get_dose())
     hist, bins = np.histogram(doses, bins='auto', density=False) #normed = True instead?
-    print('hist:', hist)
-    print('bins:', bins)
     bin_centers = (bins[1:]+bins[:-1])*0.5
-    return (bin_centers,hist) #returned this pay to make easier to plot later
+    return (bin_centers,hist) #returned this way to make easier to plot later
     
 def plot_pdf(blood_cells):
     '''plots the data from make_pdf'''
     #plot these doses on a histogram
     bin_centers, hist = make_pdf(blood_cells)
+#    bin_centers, hist = make_pdf(blood_cells)
     plt.figure()
     plt.title("Probabilty Density Function")
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Frequency")
     plt.plot(bin_centers, hist)
+    plt.grid(True)
+    plt.show()
     
 
 
-def test_pdf(num_blood_cells):
+def test_pdf(total_t, dt):
     '''tests makepdf and plots pdf
     '''
-    blood_cells = []
-    for b in range(num_blood_cells):
-        #give each random position
-        x,y,z = random.randint(0,5), random.randint(0,5), random.randint(0,5)
-        dose = random.gauss(3, .5)
-        pos = Position(x,y,z)
-        blood_cell = Blood(pos)
-        blood_cell.add_dose(dose)
-        blood_cells.append(blood_cell)
+    blood_cells = test_blood_flow(total_t,dt)
     plot_pdf(blood_cells)
          
 
@@ -242,70 +252,60 @@ def make_cdf(blood_cells):
     '''make the cumulative density function'''
     #create new numpy array to plot
     bin_centers, hist = make_pdf(blood_cells)
-    cumsum = np.cumsum(hist)
+    cumsum = np.cumsum(hist)/len(blood_cells)
     plt.figure()
+    plt.plot(bin_centers, cumsum)
     plt.title("Cumulative Density Function")
     plt.xlabel("Dose (Gray)")
     plt.ylabel("% of Blood Cells")
-    plt.plot(bin_centers, cumsum)
+    plt.grid(True)
+    
  
-def test_cdf(num_blood_cells):
+def test_cdf(total_t, dt):
     '''tests make_cdf and plots cdf
     '''
-    blood_cells = []
-    for b in range(num_blood_cells):
-        #give each random position
-        x,y,z = random.randint(0,5), random.randint(0,5), random.randint(0,5)
-        dose = random.gauss(5,1)
-        pos = Position(x,y,z)
-        blood_cell = Blood(pos)
-        blood_cell.add_dose(dose)
-        blood_cells.append(blood_cell)
+    blood_cells = test_blood_flow(total_t, dt)
     make_cdf(blood_cells)
 
 
-def make_dvh(blood_cells):
-    bin_centers, hist = make_pdf(blood_cells)
-    dvh = np.cumsum(hist)
+def make_dvh(blood_cells): 
+    '''
+    Note - this is independent from the pdf and cdf functions now to avoid
+    going through all the blood cells multiple times
+    '''
+    total = len(blood_cells)
+    doses = []
+    for cell in blood_cells:
+        doses.append(cell.get_dose())
+    hist, bins = np.histogram(doses, bins='auto', density=False) #normed = True instead?
+    bin_centers = (bins[1:]+bins[:-1])*0.5
+    dvh = np.cumsum(hist)/len(blood_cells)
     for i in range(len(dvh)):
-        dvh[i] = 100 - dvh[i]
+        dvh[i] = 1 - dvh[i]
     return (bin_centers,dvh)
     
     
         
-def test_dvh(num_blood_cells):      
-    blood_cells = []
-    for b in range(num_blood_cells):
-        #give each random position
-        x,y,z = random.randint(0,5), random.randint(0,5), random.randint(0,5)
-        dose = random.gauss(5,1)
-        pos = Position(x,y,z)
-        blood_cell = Blood(pos)
-        blood_cell.add_dose(dose)
-        blood_cells.append(blood_cell)
+def test_dvh(total_t, dt):      
+    blood_cells = test_blood_flow(total_t, dt)
     bin_centers, dvh = make_dvh(blood_cells)
     plt.figure()
     plt.title("Dose-Volume Histogram")
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Volume (%)")
     plt.plot(bin_centers, dvh)
+    plt.grid(True)
     
- 
-num_blood_cells = 100
-test_pdf(num_blood_cells)
-test_cdf(num_blood_cells)
-test_dvh(num_blood_cells) 
 
+if __name__ == '__main__': 
+#    num_blood_cells = 100
+#    test_pdf(10,.1)
+#    test_cdf(10,.1)
+    test_dvh(10,.1) 
+    
 
         
-def test_blood_flow(total_t,dt):
-    '''generate blood object and vector fields and run the simulations'''
-    all_bloods = make_blood(1000,x_max=100,y_max=100,z_max=100)
-    vector_field = const_vector_field(120,120,120,1)
-    dose_matrix =  np.zeros((120,120, 120)) + 1
-    
-    new_all_bloods = simulate_blood_flow(all_bloods,vector_field,dose_matrix,total_t, dt)
-    return new_all_bloods
+
 
 
 

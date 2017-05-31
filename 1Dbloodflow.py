@@ -44,6 +44,10 @@ class Blood(object):
 class Position(object):
     '''A position within the blood vessel. 
     '''
+    def __init__(self, x, y, z):
+        #assumes velocity and position are tuples in all three dimensions
+        #in 1D case, vy and vz are 0 --> velocity = (vx, 0, 0)
+
     def __init__(self, x, y, z): #assumes x, y, and z are floats
         self.x = x
         self.y = y
@@ -62,6 +66,7 @@ class Position(object):
     def get_z():
         return self.z
     
+
     def get_new_position(self, vx,vy,vz, dt):#change to units rather than actual distance
         #dt is the change in time dt
         old_x, old_y, old_z = self.get_x(), self.get_y(), self.get_z()
@@ -70,7 +75,8 @@ class Position(object):
         dz = vz * dt
         
         new_x, new_y, new_z = (old_x + dx), (old_y + dy), (old_z + dz)
-        return Position(new_x, new_y, new_z)
+        return Position (new_x, new_y, new_z)
+
         
 class const_vector_field(object):
         '''Each position has an associated velocity in x,y, and z directions as 
@@ -103,15 +109,12 @@ class const_vector_field(object):
         def get_vx_at_position(self,x,y,z):
             return self.vx_field[x][y][z]
         
+        
         def get_vy_at_position(self,x,y,z):
             return self.vy_field[x][y][z]
         
         def get_vz_at_position(self,x,y,z):
             return self.vz_field[x][y][z]
-        
-        def get_velocity_at_position(self,x,y,z):
-            return (self.get_vx_at_position, self.get_vy_at_position, \
-                    self.get_vz_at_position)
         
         def get_velocity_fields(self):
             return [self.vx_field, self.vy_field, self.vz_field]
@@ -122,8 +125,6 @@ class const_vector_field(object):
             y = math.floor(position.get_y())
             z = math.floor(position.get_z())
             return self.dose_matrix[x][y][z] != 0
-
-        
 
 #field = const_vector_field(10,1,1,5.2)
 #print(field.get_field())
@@ -139,9 +140,14 @@ def make_blood(num_blood_cells):
 def find_blood():
     '''finds which blood cells are in the path of the beam
     ''' 
-#    if blood.position is in        
+    if position.dose(blood.position) !=  0:
+        blood.getting_dose = True
+        blood.dose = position.dose(blood.position)
         
-def add_constant_dose(all_bloods, dose):
+        
+               
+        
+def add_constant_dose(all_bloods):
     '''
     add a constant dose of radiation to all blood within the radiation beam
     blood - a list of blood objects that are
@@ -149,14 +155,15 @@ def add_constant_dose(all_bloods, dose):
 
     for i in all_bloods:
         if i.getting_dose == True;
-            i.setdose(dose)
+            i.setdose(i.dose)
     
 def bloodflow(blood,position,dt):
-    velocity = position(blood.position)
-    x = blood.position[0]
-    y = blood.position[1]
-    z = blood.position[3]
-
+    vx = positon.vx(blood.position)
+    vy = positon.vy(blood.position)
+    vz = positon.vz(blood.position)
+    blood.x = blood.x + dt * vx
+    blood.y = blood.y + dt * vy
+    blood.z = blood.z + dt * vz
 
 def simulate_blood_flow(all_bloods,Positions,total_time, dt):
     t = 0;
@@ -166,10 +173,6 @@ def simulate_blood_flow(all_bloods,Positions,total_time, dt):
         t = t + dt
     #time?
     pass 
-
-def simulate_blood_flow(total_time, dt):
-    pass
-
         
 def make_pdf(blood):
     pass
@@ -183,6 +186,12 @@ def make_dvh():
         
         
     
-        
+
+
+#field = const_vector_field(10,1,1,5.2)
+#print(field.get_field())
+#print(field.get_v_at_position((0,0,1)))
+
+
 
 

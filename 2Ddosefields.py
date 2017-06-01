@@ -10,11 +10,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import math
 import random
-import readDoses
-random.seed(1)
+from readDoses import *
 
-
-#print('f1' in mat)
 
 class Blood(object):
     ''' A Blood voxel with an position and dose
@@ -48,13 +45,21 @@ class Blood(object):
         z = position.z
         dose = dose_matrix[x][y][z]
         self.dose_recive = dose
-#    dose = dose_matrix[1][2][4] 
-#    def __str__(self):
-#        print("Blood at position", self.get_position(), "w/ Dose of ", self.get_dose()
-#       
+        
+    def is_in_field(self):
+        pass
+    
+    def __str__(self):
+        return "Blood at position" + str(self.get_position()) + "w/ Dose of " + \
+                str(self.get_dose())
+                
+        
+
+#
 #pos = Position(1,2,3)
+#print(pos)
 #blood_1 = Blood(pos, 4)
-#print(blood_1)
+##print(blood_1)
 
 class Position(object):
     '''A position within the blood vessel. 
@@ -87,77 +92,94 @@ class Position(object):
         new_x, new_y, new_z = math.floor(old_x + dx), math.floor(old_y + dy), \
                                         math.floor(old_z + dz)
         return Position (new_x, new_y, new_z)
+    
+    def __str__(self):
+        pass
 
-class vector_field(object):
+class Vector_field(object):
     '''TODO  - make this the superclass of const_vector_field. Make another
     subclass of vector_field called varying_field(?)
     '''
-    pass        
-class const_vector_field(object):
+    '''Each position has an associated velocity in x,y, and z directions as 
+    well as an associated dose'''
+    def __init__(self, x_dim, y_dim, z_dim): #change the order of these later
+        '''Assumes x_dim is a scalar of the number of units in our matrix
+        In one dimension, y_dim and z_dim should just be 1
+        #TODO - Adjust this later to match up with the velocity fields  in vdx files 
+        '''             
+        self.x_dim, self.y_dim, self.z_dim = x_dim, y_dim, z_dim
+        #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z  
+        
+    def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
+        '''assume dose matrix a numpy matrix of the same dimensions as velocity field''' 
+        self.dose_matrix = dose_matrix
+            
+    def fit_dose_matrix(self, exp_dose_matrix): #exp stands for expanded
+        '''
+        #assumes dose matrix IS NOT the same dimensions as velocity field
+        #simply takes in a matrix and truncates the matrix to be the same dimensions
+        #as the velocity field
+        '''
+        pass #do later
+       
+    def get_vx_at_position(self,x,y,z):
+        return self.vx_field[x][y][z]
+        
+        
+    def get_vy_at_position(self,x,y,z):
+        return self.vy_field[x][y][z]
+        
+    def get_vz_at_position(self,x,y,z):
+        return self.vz_field[x][y][z]
+    
+    def get_dimensions(self):
+        return (self.x_dim, self.y_dim, self.z_dim)
+        
+    def get_velocity_fields(self):
+        return [self.vx_field, self.vy_field, self.vz_field]
+        
+    def is_position_in_dose_field(self, position):
+        '''Returns true if the input position is within the dose_field
+        '''
+        x = math.floor(position.get_x()) #math.floor makes the position an int
+        y = math.floor(position.get_y()) #TODO - math.floor not really needed
+        z = math.floor(position.get_z())
+        return self.dose_matrix[x][y][z] != 0 #if dose is nonzero, must be in dose field
+        
+    def is_position_in_vector_field(self, position):
+        '''Returns true if position is within the blood vessel
+        '''
+        x = position.get_x()
+        y = position.get_y() 
+        z = position.get_z()
+        return (0 <= x < self.x_dim and 0 <= y < self.y_dim and 0 <= z < self.z_dim) 
+        #less than or equal to? <=     
+
+    def __str__(self):
+            return "Vector_field w/ dim: " + str((self.x_dim, self.y_dim, \
+                                                         self.z_dim))
+
+class Const_vector_field(Vector_field):
         '''Each position has an associated velocity in x,y, and z directions as 
             well as an associated dose'''
             #NOTE - vy does not have a default value of 0 in 2d version
-        def __init__(self, x_dim, y_dim, z_dim, vx,  vy= 0, vz = 0): #change the order of these later
+        def __init__(self, x_dim, y_dim, z_dim, vx, vy, vz): #change the order of these later
             '''Assumes x_dim is a scalar of the number of units in our matrix
             In one dimension, y_dim and z_dim should just be 1
             #TODO - Adjust this later to match up with the velocity fields  in vdx files 
-            '''             
+            '''     
+            Vector_field.__init__(self,x_dim, y_dim, z_dim)
             self.vx, self.vy, self.vz = vx, vy, vz
-            self.x_dim, self.y_dim, self.zdim = x_dim, y_dim, z_dim
             self.velocity = (self.vx, self.vy, self.vz)
             #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z
             self.vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
             self.vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
-            self.vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz   
+            self.vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz  
+                                    
         
-        def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
-            '''assume dose matrix a numpy matrix of the same dimensions as velocity field''' 
-            self.dose_matrix = dose_matrix
-            
-        def fit_dose_matrix(self, exp_dose_matrix): #exp stands for expanded
-            '''
-            #assumes dose matrix IS NOT the same dimensions as velocity field
-            #simply takes in a matrix and truncates the matrix to be the same dimensions
-            #as the velocity field
-            '''
-            pass #do later
-       
-        def get_vx_at_position(self,x,y,z):
-            return self.vx_field[x][y][z]
-        
-        
-        def get_vy_at_position(self,x,y,z):
-            return self.vy_field[x][y][z]
-        
-        def get_vz_at_position(self,x,y,z):
-            return self.vz_field[x][y][z]
-        
-        def get_velocity_fields(self):
-            return [self.vx_field, self.vy_field, self.vz_field]
-        
-        def is_position_in_dose_field(self, position):
-            '''Returns true if the input position is within the dose_field
-            '''
-            x = math.floor(position.get_x()) #math.floor makes the position an int
-            y = math.floor(position.get_y()) #TODO - math.floor not really needed
-            z = math.floor(position.get_z())
-            return self.dose_matrix[x][y][z] != 0 #if dose is nonzero, must be in dose field
-        
-        def is_position_in_vector_field(self, position):
-            '''Returns true if position is within the blood vessel
-            '''
-            x = position.get_x()
-            y = position.get_y() 
-            z = position.get_z()
-            return (0 <= x <= self.x_dim and 0 <= y <= self.y_dim and 0 <= z <= self.z_dim)
-
-#field = const_vector_field(10,1,1,5.2)
-#print(field.get_field())
-#print(field.get_v_at_position((0,0,1)))
-
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
-               x_max=0,y_max=60,z_max=85):
+               x_max=1,y_max=50,z_max=80):
     '''makes num_blood_cells objects and gives them all an initial position
     '''
     bloods =[]
@@ -175,7 +197,7 @@ def plot_positions(blood, t):
     '''Blood is a list of all the blood voxels objects, t is a scalar representing
     at what time the blood is plotted
     '''
-     pass   
+    pass   
   
 def add_dose_for_allblood(all_bloods,dose_matrix):
     '''
@@ -184,6 +206,7 @@ def add_dose_for_allblood(all_bloods,dose_matrix):
     '''
 
     for i in all_bloods:
+        #TODO - add condition - only if i is in beam
         i.current_dose_level(dose_matrix)
         i.add_dose()
     
@@ -198,6 +221,10 @@ def bloods_flow(all_bloods, vector_field,dt):
         vz = vector_field.get_vz_at_position(x,y,z)
         new_position = position.get_new_position(vx,vy,vz, dt)
         i.find_new_position(new_position)
+            #choose a random y position
+        #if new position not in field, DO NOT UPDATE, append a blood to
+        #the end of all_bloods, with random y position at z = 0
+        
     
 
 def blood_flow_with_beam(all_bloods,vector_field,dose_matrix,total_time, dt):
@@ -232,12 +259,12 @@ def simulate_blood_flow(dose_fields, times, time_gaps, dt, num_bloods = 100):
     times: a list of the total time each dose matrix is 'on'
     time_gaps: the time between doses, while blood is still moving
     '''
-    all_bloods = make_blood(num_bloods ,x_max=75,y_max=100,z_max=1)
-    vector_field = const_vector_field(120,120,120,1, vy = 0) #TODO = change this vy
+    all_bloods = make_blood(num_bloods)
+    vector_field = Const_vector_field(1,120,120,0,1,3) #TODO = change this vy
     #make a matrix of random values between 0 and 1  
     for i in range(len(times)):
+        blood_after_dose = blood_flow_with_beam(all_bloods, vector_field, dose_fields[i], times[i], dt)
         try:
-            blood_after_dose = blood_flow_with_beam(all_bloods, vector_field, dose_fields[i], times[i], dt)
             all_bloods = blood_flow_no_beam(blood_after_dose, vector_field, time_gaps[i], dt)
         except IndexError: #because len(time_gaps) < len(times); 2 compared to 3, for ex.
             pass
@@ -325,7 +352,7 @@ def test_dvh(dose_fields, times, time_gaps, dt, n_bloods = 100):
     blood_cells = simulate_blood_flow(dose_fields, times, time_gaps,dt, num_bloods = n_bloods)
     bin_centers, dvh = make_dvh(blood_cells)
     plt.figure()
-    plt.title("Dose-Volume Histogram")
+    plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(n_bloods))
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Volume (%)")
     plt.plot(bin_centers, dvh)
@@ -333,16 +360,12 @@ def test_dvh(dose_fields, times, time_gaps, dt, n_bloods = 100):
     
 
 if __name__ == '__main__': 
+    pass
 #    num_blood_cells = 100
-#    test_pdf(10,.1)
-#    test_cdf(10,.1)
-    test_dvh(10,.1) 
+#    test_pdf(doses, time_on, time_off, .1, n_bloods = 1000)
+#    test_cdf(doses, time_on, time_off, .1, n_bloods = 1000)
+    for n in [1,10,100,1000]:
+        test_dvh(doses, time_on, time_off, .1, n_bloods = n) 
     
 
         
-
-
-
-
-
-

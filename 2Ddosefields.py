@@ -101,9 +101,9 @@ class const_vector_field(object):
             self.x_dim, self.y_dim, self.zdim = x_dim, y_dim, z_dim
             self.velocity = (self.vx, self.vy, self.vz)
             #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z
-            self.vx_field = np.zeros((z_dim,y_dim, x_dim)) + self.vx   
-            self.vy_field = np.zeros((z_dim,y_dim, x_dim)) + self.vy  
-            self.vz_field = np.zeros((z_dim,y_dim, x_dim)) + self.vz   
+            self.vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
+            self.vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
+            self.vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz   
         
         def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
             '''assume dose matrix a numpy matrix of the same dimensions as velocity field''' 
@@ -149,13 +149,14 @@ class const_vector_field(object):
 
 
 
-def make_blood(num_blood_cells,x_max=100,y_max=100,z_max=100):
-    '''makes num_blood_cells objects and gives them all an initial position
+def make_blood(num_blood_cells,x_min=0,y_min=0,z_min=0, \
+               x_max=100,y_max=100,z_max=100):
+    '''makes num_blood_cells objects and gives them all an initial position with given limits
     '''
     bloods =[]
-    x = np.random.randint(0,x_max,num_blood_cells)
-    y = np.random.randint(0,y_max,num_blood_cells)
-    z = np.random.randint(0,z_max,num_blood_cells)
+    x = np.random.randint(x_min,x_max,num_blood_cells)
+    y = np.random.randint(y_min,y_max,num_blood_cells)
+    z = np.random.randint(z_min,z_max,num_blood_cells)
     for i in range(num_blood_cells):
         position = Position(x[i],y[i],z[i])
         blood = Blood(position)

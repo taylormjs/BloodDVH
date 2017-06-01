@@ -156,7 +156,6 @@ class const_vector_field(object):
 #print(field.get_v_at_position((0,0,1)))
 
 
-
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
                x_max=0,y_max=60,z_max=85):
     '''makes num_blood_cells objects and gives them all an initial position

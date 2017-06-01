@@ -15,3 +15,4 @@ total_time = t1 + t2 +t3 + gap12 + gap23
 
 time_on = [t1,t2,t3]
 time_off = [gap12,gap23]
+

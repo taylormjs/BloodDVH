@@ -376,7 +376,7 @@ if __name__ == '__main__':
 #    num_blood_cells = 100
 #    test_pdf(doses, time_on, time_off, .1, n_bloods = 1000)
 #    test_cdf(doses, time_on, time_off, .1, n_bloods = 1000)
-    for n in [1,10,100,1000]:
+    for n in [10,100,1000, 10000]:
         test_dvh(doses, time_on, time_off, .1, n_bloods = n) 
     
 

@@ -15,8 +15,6 @@ total_time = t1 + t2 +t3 + gap12 + gap23
 
 time_on = [t1,t2,t3]
 time_off = [gap12,gap23]
-<<<<<<< HEAD
 
-=======
 doses = [f1,f2,f3]
->>>>>>> f79c0983cf2ad1744f1e1e8104bf109fbde75ab6
+

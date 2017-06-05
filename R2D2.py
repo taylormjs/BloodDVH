@@ -264,14 +264,9 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field,dose_matrix,total_t
     """
     t = 0;
     while t <= total_time:
-<<<<<<< HEAD
-        dose_per_time = dose_matrix / total_time 
-        add_dose_for_allblood(all_bloods,dose_per_time, vector_field,dt) 
-        bloods_flow(all_bloods,vector_field,dt)
-=======
-        add_dose_for_allblood(in_bloods,dose_matrix) 
+        dose_per_time = dose_matrix / total_time #dose_per_time a dose matrix per unit time
+        add_dose_for_allblood(in_bloods,dose_per_time, vector_field,dt) 
         bloods_flow(in_bloods, out_bloods, vector_field,dt)
->>>>>>> 9f79e200847e096a004094903170cf6eee4f2ff5
         t = t + dt
         
     return in_bloods
@@ -449,10 +444,7 @@ if __name__ == '__main__':
 #    num_blood_cells = 100
 #    test_pdf(doses, time_on, time_off, .1, n_bloods = 1000)
 #    test_cdf(doses, time_on, time_off, .1, n_bloods = 1000)
-<<<<<<< HEAD
-    for n in [100]:
-        test_dvh(doses, time_on, time_off, .1, n_bloods = n) 
-=======
+
 #   start time
     start = time.time()
     for n in [100]:
@@ -464,7 +456,7 @@ if __name__ == '__main__':
     end = time.time()
     print("Time to run: ", (end-start), "seconds")
 
->>>>>>> 9f79e200847e096a004094903170cf6eee4f2ff5
+
     
 
         

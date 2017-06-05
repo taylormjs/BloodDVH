@@ -191,9 +191,9 @@ def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
     '''makes num_blood_cells objects and gives them all an initial position
     '''
     bloods =[]
-    x = np.random.randint(x_min,x_max,num_blood_cells)
-    y = np.random.randint(y_min,y_max,num_blood_cells)
-    z = np.random.randint(z_min,z_max,num_blood_cells)
+    x = np.random.uniform(x_min,x_max,num_blood_cells)#changed from randit to uniform
+    y = np.random.uniform(y_min,y_max,num_blood_cells)
+    z = np.random.uniform(z_min,z_max,num_blood_cells)
     for i in range(num_blood_cells):
         position = Position(x[i],y[i],z[i])
         blood = Blood(position)
@@ -217,6 +217,18 @@ def add_dose_for_allblood(all_bloods,dose_matrix, vector_field):
         if vector_field.is_position_in_dose_field(i.get_position()):
             i.current_dose_level(dose_matrix)
             i.add_dose()
+
+def generate_new_blood(lefted_bloods,velocity_field):
+    '''generate new blood as to simulate the blood flow into the region from y = 0, based 
+        on the velocity and the cross section area in yz-plane
+    '''
+    num_blood = len(lefted_bloods)
+    vy_field = velocity_field.get_velocity_fields()[1]
+    mean_vy = vy_field.
+    
+    bloods = make_blood(num_blood,y_max = 0)
+    
+    return bloods
     
 def bloods_flow(in_bloods, out_bloods, vector_field,dt):
     '''Updates the positions of all the bloods still within the vector field
@@ -242,7 +254,8 @@ def bloods_flow(in_bloods, out_bloods, vector_field,dt):
             out_bloods.append(i)
             in_bloods.remove(i)
         
-    
+
+ 
 
 def blood_flow_with_beam(in_bloods, out_bloods, vector_field,dose_matrix,total_time, dt):
     """simulate the flow of blood while the radiation beam IS ON, assumes
@@ -269,16 +282,19 @@ def blood_flow_no_beam(all_bloods, vector_field, time_gap, dt):
         t += dt
     return all_bloods
 
-def simulate_blood_flow(dose_fields, times, time_gaps, dt, num_bloods = 100):
+def simulate_blood_flow(dose_fields, times, time_gaps, dt, blood_density= 1):
     '''generate blood objects and velocity vector fields, then runs the simulation
     NOTE - assumes the starting point is when the first field turns on
     dose_fields: a list of dose_field matrices
     times: a list of the total time each dose matrix is 'on'
     time_gaps: the time between doses, while blood is still moving
     '''
+    #initialize vector field, make # of blood voxels based on blood density
+    vector_field = Const_vector_field(1,120,120,0,1,3) #TODO = change this vy
+    num_bloods = blood_density * vector_field.size() #total number of the blood
     in_bloods = make_blood(num_bloods)
     out_bloods = []
-    vector_field = Const_vector_field(1,120,120,0,4,2) #TODO = change this vy 
+
     for i in range(len(times)):
         #Add dose
         in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], times[i], dt)

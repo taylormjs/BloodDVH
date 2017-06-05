@@ -3,9 +3,9 @@ import numpy as np
 mat = scipy.io.loadmat('DOSEFIELDS.mat')
 
 
-f1 = [mat['f1']] #has dimenstion 1*75*100
-f2 = [mat['f2']] #has dimenstion 1*75*100
-f3 = [mat['f3']] #has dimenstion 1*75*100
+f1 = np.array([mat['f1']]) #has dimenstion 1*75*100
+f2 = np.array([mat['f2']]) #has dimenstion 1*75*100
+f3 = np.array([mat['f3']]) #has dimenstion 1*75*100
 t1 = mat['t1'][0][0]
 t2 = mat['t2'][0][0]
 t3 = mat['t3'][0][0]
@@ -17,4 +17,7 @@ time_on = [t1,t2,t3]
 time_off = [gap12,gap23]
 
 doses = [f1,f2,f3]
+<<<<<<< HEAD
+=======
 
+>>>>>>> 9f79e200847e096a004094903170cf6eee4f2ff5

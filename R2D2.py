@@ -34,7 +34,7 @@ class Blood(object):
     def find_new_position(self, position):
         self.position = position
         
-    def current_dose_level(self,dose_matrix):
+    def current_dose_level(self,dose_matrix,dt):
         '''return dose that each unit of blood gets in a dose_matrix
         '''
         self.dose_recive = 0
@@ -42,7 +42,7 @@ class Blood(object):
         x = int(position.x) #TODO - these may need to be getter functions later
         y = int(position.y) #ie y = position.get_y()
         z = int(position.z)
-        dose = dose_matrix[x][y][z]
+        dose = dose_matrix[x][y][z] * dt
         self.dose_recive = dose
         
     def is_in_field(self):
@@ -207,7 +207,7 @@ def plot_positions(blood, t):
     '''
     pass   
   
-def add_dose_for_allblood(all_bloods,dose_matrix, vector_field):
+def add_dose_for_allblood(all_bloods,dose_matrix, vector_field,dt):
     '''
     add a constant dose of radiation to all blood within the radiation beam
     blood - a list of blood voxel objects
@@ -215,7 +215,7 @@ def add_dose_for_allblood(all_bloods,dose_matrix, vector_field):
 
     for i in all_bloods:
         if vector_field.is_position_in_dose_field(i.get_position()):
-            i.current_dose_level(dose_matrix)
+            i.current_dose_level(dose_matrix,dt)
             i.add_dose()
 
 def generate_new_blood(lefted_bloods,velocity_field):
@@ -264,8 +264,14 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field,dose_matrix,total_t
     """
     t = 0;
     while t <= total_time:
+<<<<<<< HEAD
+        dose_per_time = dose_matrix / total_time 
+        add_dose_for_allblood(all_bloods,dose_per_time, vector_field,dt) 
+        bloods_flow(all_bloods,vector_field,dt)
+=======
         add_dose_for_allblood(in_bloods,dose_matrix) 
         bloods_flow(in_bloods, out_bloods, vector_field,dt)
+>>>>>>> 9f79e200847e096a004094903170cf6eee4f2ff5
         t = t + dt
         
     return in_bloods
@@ -443,6 +449,10 @@ if __name__ == '__main__':
 #    num_blood_cells = 100
 #    test_pdf(doses, time_on, time_off, .1, n_bloods = 1000)
 #    test_cdf(doses, time_on, time_off, .1, n_bloods = 1000)
+<<<<<<< HEAD
+    for n in [100]:
+        test_dvh(doses, time_on, time_off, .1, n_bloods = n) 
+=======
 #   start time
     start = time.time()
     for n in [100]:
@@ -454,6 +464,7 @@ if __name__ == '__main__':
     end = time.time()
     print("Time to run: ", (end-start), "seconds")
 
+>>>>>>> 9f79e200847e096a004094903170cf6eee4f2ff5
     
 
         

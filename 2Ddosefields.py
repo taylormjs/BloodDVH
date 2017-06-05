@@ -291,7 +291,7 @@ def simulate_blood_flow(dose_fields, times, time_gaps, dt, num_bloods = 100):
             pass
     #bloods still in vector fields and those that have left should be returned in the 
     #same list
-    print(len(out_bloods))
+    print(len(out_bloods)) #TODO - 
     return in_bloods + out_bloods
 
 

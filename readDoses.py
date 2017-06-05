@@ -17,3 +17,7 @@ time_on = [t1,t2,t3]
 time_off = [gap12,gap23]
 
 doses = [f1,f2,f3]
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9f79e200847e096a004094903170cf6eee4f2ff5

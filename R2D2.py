@@ -194,7 +194,8 @@ class Const_vector_field(Vector_field):
         
         def get_vz_field(self):
             return self.vz_field  
-        
+        def get_v_square(self):
+            return self.vx_field**2 + self.vy_field**2 + self.vz_field**2
         def get_velocity_fields(self):
             return [self.vx_field, self.vy_field, self.vz_field]                         
         
@@ -248,16 +249,14 @@ def gen_new_blood(out_blood_per_t,vector_field, in_boundary, axis):
     #num_bloods = len(out_bloods)
     lo = in_boundary[0]
     hi = in_boundary[1]
-    vx_field = vector_field.get_vx_field() #NOTE - will be 0 in 2D case
-    vy_field = vector_field.get_vy_field()
-    vz_field = vector_field.get_vz_field()
+    v_square = vector_field.get_v_square()
     #Find the velocities at the units adjacent to the boundary
     if axis == 'y':
-        mini_field = vz_field[0,lo:hi+1, 0]        
+        mini_field = v_square[0,lo:hi+1, 0]        
     elif axis == 'z':
-        mini_field = vy_field[0, 0, lo:hi+1]
+        mini_field = v_square[0, 0, lo:hi+1]
     elif axis == 'x': # TODO  - note that x won't work for 2D case as x = 0 
-        mini_field = vx_field[lo:hi+1, 0, 0] #TODO - 
+        mini_field = v_square[lo:hi+1, 0, 0] #TODO - 
     else:
         raise ValueError("must input 'x', 'y', or 'z' as the axis. 'y' is default")
     #find probability matrix to find indices at which the blood will enter
@@ -267,18 +266,68 @@ def gen_new_blood(out_blood_per_t,vector_field, in_boundary, axis):
     #with probabilities defined, this will be the positions of the new blood
     #units
     choose_ind = np.random.choice(len(prob_field),out_blood_per_t, p = prob_field) #Note - a list of indices
-
+    ran = np.random.random(out_blood_per_t)                          
     gen_bloods = []
-    for i in choose_ind:
+    for i in range(len(choose_ind)):
         if axis == 'y':
-            gen_blood = Blood(Position(0,float(lo+i),0))
+            y = choose_ind[i]+ ran[i] + lo           
+            gen_blood = Blood(Position(0,y,0))
         elif axis == 'z':
-            gen_blood = Blood(Position(0,0,float(lo+i)))
+            z = choose_ind[i]+ ran[i] + lo  
+            gen_blood = Blood(Position(0,0,z))
         elif axis == 'x':
-            gen_blood = Blood(Position(float(lo+i),0,0))
+            x = choose_ind[i]+ ran[i] + lo 
+            gen_blood = Blood(Position(x,0,0))
         gen_bloods.append(gen_blood)
     
     return gen_bloods
+
+def gen_new_blood_yz(out_blood_per_t,vector_field, in_boundary, axis):
+    '''generate new blood as to simulate the blood flow into the region from y = 0, z = 0 based 
+    on the velocity and the cross section area in yz-plane
+    out_bloods (int)  - number of bloods leaving each time step, will vary
+    total_velocity (float) - the sum of the magnitudes of all velocities in a specified
+    area
+    in_boundary (tuple of ranges y_lo, y_hi,z_lo, z_hi))- the boundary 
+    at which the new blood cells can enter
+    axis (str) - can be either 'y' or 'z', defining the axis along which the
+    blood cells will be added (ie - if the blood flows in, crossing the z axis,
+    axis = 'z')
+    '''    
+    #TODO - if this is taking too long later, separate into two functions
+    
+    #Initiliaze num_bloods, boundary limits, and fields
+    #num_bloods = len(out_bloods)
+    x_boundary = in_boundary[0]
+    y_boundary = in_boundary[1]
+    z_boundary = in_boundary[2]
+    x_lo = x_boundary[0]
+    x_hi = x_boundary[1]
+    y_lo = y_boundary[0]
+    y_hi = y_boundary[1]
+    z_lo = z_boundary[0]
+    z_hi = z_boundary[1]
+    v_square = vector_field.get_v_square()
+    #Find the velocities at the units adjacent to the boundary
+    # xy plane 
+    mini_field = v_square[x_lo:x_hi+1,y_lo:y_hi+1, 0]   
+    total = mini_field.sum()
+    prob_field =  mini_field / total
+    #generate a 1D list of number_bloods leaving using np.random.choice()
+    #with probabilities defined, this will be the positions of the new blood
+    #units
+    choose_ind = np.random.choice(prob_field.size,out_blood_per_t, p = prob_field.flatten()) #flatten the matrix to 1-d 
+    ran = np.random.random(out_blood_per_t)                          
+    gen_bloods = []
+    for i in range(out_blood_per_t):
+        x = choose_ind[i]//y_hi#reconsturct the matrix
+        y = choose_ind[i] % y_hi
+        x = x + np.random.random() + x_lo 
+        y = y + np.random.random() + y_lo                        
+        gen_blood = Blood(Position(x,y,0))                  
+    return gen_bloods
+
+
 
 def test_gen_new_blood(axis = 'x'):
     '''Tests the Generation of new Blood 

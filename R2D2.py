@@ -4,6 +4,8 @@ Created on Thu Jun  1 16:38:04 2017
 @author: taylorsorenson, zhaoqiwang, 
 """
 
+
+
 import numpy as np 
 from matplotlib import pyplot as plt
 import math

@@ -488,7 +488,7 @@ def test_plot_positions(num_bloods, vector_field, time, dt):
     #flow blood and plot final positions
     t = 0
     while t <time:
-        bloods_flow(in_bloods, out_bloods, vector_field, dt, axis = 'y', in_boundary = (0,120))
+        bloods_flow(in_bloods, out_bloods, vector_field, dt, axis = 'y', in_boundary = (0,40))
         t += dt
     plot_positions(in_bloods, 'bo')
             
@@ -504,8 +504,8 @@ if __name__ == '__main__':
 
 #   start time
     start = time.time()
-    for n in [1]:
-        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py    
+#    for n in [1]:
+#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py    
     test_plot_positions(100, Const_vector_field(1,120,120,0,1,3), 20, .1)    
     #stop time
     end = time.time()

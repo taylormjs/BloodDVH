@@ -41,13 +41,13 @@ def plot_bloods_3d(bloods, c = 'r',m ='o'):
     ys = []
     zs = []
     for i in bloods:
-        (x,y,z) = i.get_position()
+        (x,y,z) = i.get_position().get_position()
         xs.append(x)
         ys.append(y)
         zs.append(z)
     ax.scatter(xs, ys, zs, c=c, marker=m)
 
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('Z Label')
+    ax.set_xlabel('X ')
+    ax.set_ylabel('Y ')
+    ax.set_zlabel('Z ')
     plt.show()

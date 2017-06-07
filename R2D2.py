@@ -196,7 +196,8 @@ class Const_vector_field(Vector_field):
         
         def get_vz_field(self):
             return self.vz_field  
-        
+        def get_v_square(self):
+            return self.vx_field**2 + self.vy_field**2 + self.vz_field**2
         def get_velocity_fields(self):
             return [self.vx_field, self.vy_field, self.vz_field]                         
         
@@ -250,16 +251,14 @@ def gen_new_blood(out_blood_per_t,vector_field, in_boundary, axis):
     #num_bloods = len(out_bloods)
     lo = in_boundary[0]
     hi = in_boundary[1]
-    vx_field = vector_field.get_vx_field() #NOTE - will be 0 in 2D case
-    vy_field = vector_field.get_vy_field()
-    vz_field = vector_field.get_vz_field()
+    v_square = vector_field.get_v_square()
     #Find the velocities at the units adjacent to the boundary
     if axis == 'y':
-        mini_field = vz_field[0,lo:hi+1, 0]        
+        mini_field = v_square[0,lo:hi+1, 0]        
     elif axis == 'z':
-        mini_field = vy_field[0, 0, lo:hi+1]
+        mini_field = v_square[0, 0, lo:hi+1]
     elif axis == 'x': # TODO  - note that x won't work for 2D case as x = 0 
-        mini_field = vx_field[lo:hi+1, 0, 0] #TODO - 
+        mini_field = v_square[lo:hi+1, 0, 0] #TODO - 
     else:
         raise ValueError("must input 'x', 'y', or 'z' as the axis. 'y' is default")
     #find probability matrix to find indices at which the blood will enter
@@ -269,26 +268,77 @@ def gen_new_blood(out_blood_per_t,vector_field, in_boundary, axis):
     #with probabilities defined, this will be the positions of the new blood
     #units
     choose_ind = np.random.choice(len(prob_field),out_blood_per_t, p = prob_field) #Note - a list of indices
-
+    ran = np.random.random(out_blood_per_t)                          
     gen_bloods = []
-    for i in choose_ind:
+    for i in range(len(choose_ind)):
         if axis == 'y':
-            gen_blood = Blood(Position(0,float(lo+i),0))
+            y = choose_ind[i]+ ran[i] + lo           
+            gen_blood = Blood(Position(0,y,0))
         elif axis == 'z':
-            gen_blood = Blood(Position(0,0,float(lo+i)))
+            z = choose_ind[i]+ ran[i] + lo  
+            gen_blood = Blood(Position(0,0,z))
         elif axis == 'x':
-            gen_blood = Blood(Position(float(lo+i),0,0))
+            x = choose_ind[i]+ ran[i] + lo 
+            gen_blood = Blood(Position(x,0,0))
         gen_bloods.append(gen_blood)
     
     return gen_bloods
 
-def test_gen_new_blood(axis = 'x'):
+def gen_new_blood_3d(out_blood_per_t,vector_field, in_boundary,direction='z'):
+    '''generate new blood as to simulate the blood flow into the region from y = 0, z = 0 based 
+    on the velocity and the cross section area in yz-plane
+    out_bloods (int)  - number of bloods leaving each time step, will vary
+    vector_field(vector_field object) the vector field object contains the velocity of f
+    in_boundary (a list of tuple of ranges[(x_lo,x_hi),(y_lo, y_hi),(z_lo, z_hi)])- the boundary 
+    at which the new blood cells can enter
+    axis (str) - can be either 'y' or 'z', defining the axis along which the
+    blood cells will be added (ie - if the blood flows in, crossing the z axis,
+    axis = 'z')
+    '''    
+    #TODO - if this is taking too long later, separate into two functions
+    
+    #Initiliaze num_bloods, boundary limits, and fields
+    #num_bloods = len(out_bloods)
+    x_boundary = in_boundary[0]
+    y_boundary = in_boundary[1]
+    z_boundary = in_boundary[2]
+    x_lo = x_boundary[0]
+    x_hi = x_boundary[1]
+    y_lo = y_boundary[0]
+    y_hi = y_boundary[1]
+    z_lo = z_boundary[0]
+    z_hi = z_boundary[1]
+    v_square = vector_field.get_v_square()
+    
+    #Find the velocities at the units adjacent to the boundary
+    # xy plane 
+    mini_field = v_square[x_lo:x_hi+1,y_lo:y_hi+1, 0]   
+    total = mini_field.sum()
+    prob_field =  mini_field / total
+    #generate a 1D list of number_bloods leaving using np.random.choice()
+    #with probabilities defined, this will be the positions of the new blood
+    #units
+    choose_ind = np.random.choice(prob_field.size,out_blood_per_t, p = prob_field.flatten()) #flatten the matrix to 1-d 
+    ran = np.random.random(out_blood_per_t)                          
+    gen_bloods = []
+    for i in range(out_blood_per_t):
+        x = choose_ind[i]//y_hi#reconsturct the matrix
+        y = choose_ind[i] % y_hi
+        x = x + np.random.random() + x_lo 
+        y = y + np.random.random() + y_lo                        
+        gen_blood = Blood(Position(x,y,0))                  
+        gen_bloods.append(gen_blood)
+    return gen_bloods
+
+
+
+def test_gen_new_blood():
     '''Tests the Generation of new Blood 
     '''
     out_blood = make_blood(17)
     field = Const_vector_field(1,120,120,0,4,2)
-    in_boundary = (40,42)
-    gen_blood = gen_new_blood(out_blood,field, in_boundary, axis = 'z')
+    in_boundary = [(0,1),(10,20),(10,20)]
+    gen_blood = gen_new_blood_yz(10,field, in_boundary)
     print(len(gen_blood))
     for b in gen_blood:
         print(b)
@@ -298,7 +348,7 @@ def test_gen_new_blood(axis = 'x'):
     
     
     
-def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = (0,120), axis = 'y'):
+def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,1),(0,120),(0,1)], axis = 'y'):
     '''Updates the positions of all the bloods still within the vector field
     in one time step with length dt (a float)
     in_bloods - those still within defined vector field
@@ -327,7 +377,7 @@ def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = (0,120), a
             in_bloods.remove(i)
             out_blood_count += 1
     #Generate new bloods, one blood unit for each blood unit out
-    in_bloods += gen_new_blood(out_blood_count,vector_field, in_boundary, axis)
+    in_bloods += gen_new_blood_3d(out_blood_count,vector_field, in_boundary, axis)
 
  
 
@@ -490,7 +540,7 @@ def test_plot_positions(num_bloods, vector_field, time, dt):
     #flow blood and plot final positions
     t = 0
     while t <time:
-        bloods_flow(in_bloods, out_bloods, vector_field, dt, axis = 'y', in_boundary = (0,40))
+        bloods_flow(in_bloods, out_bloods, vector_field, dt, axis = 'y', in_boundary = [(0,1),(0,40),(10,20)])
         t += dt
     plot_positions(in_bloods, 'bo')
             

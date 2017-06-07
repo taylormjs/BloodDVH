@@ -155,6 +155,9 @@ class Vector_field(object):
     
     def get_z_dim(self):
         return self.z_dim
+    
+    def get_size(self):
+        return self.vx_field.size
                
     def is_position_in_dose_field(self, position):
         '''Returns true if the input position is within the dose_field
@@ -432,9 +435,11 @@ def simulate_blood_flow(dose_fields, vector_fields, times, time_gaps, dt, blood_
     '''
     #initialize vector field, make # of blood voxels based on blood density
     num_bloods = int(blood_density * vector_field.get_size()) #total number of the blood
-    in_bloods = make_blood(num_bloods)
+    (x_dim , y_dim ,z_dim) = vector_field.get_dimensions()
+    print(x_dim,y_dim,z_dim)
+    in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
     out_bloods = []
-
+    plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
     for i in range(len(times)):
         #Add dose
         in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], times[i], dt)
@@ -452,6 +457,7 @@ def simulate_blood_flow(dose_fields, vector_fields, times, time_gaps, dt, blood_
     print("# of bloods IN velocity field: " ,len(in_bloods)) 
     print("Original # of bloods", num_bloods)
     print("# of bloods generated", (len(out_bloods) + len(in_bloods) - num_bloods))
+    plot_bloods_3d(in_bloods, c = 'b',m = 'o')# fianl postion of the bloods 
 
     return in_bloods + out_bloods
 
@@ -555,31 +561,36 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
         bloods_flow(in_bloods, out_bloods, vector_field, dt, in_boundary ,direction)
         t += dt
     plot_bloods_3d(in_bloods, c = 'b',m = 'o')
-#            
-#def test_blood():
-#    '''run the blood simulation and plot various figures'''
-#    dose_fields = []
-#    simulate_blood_flow(dose_fields, times, time_gaps, dt, blood_density= 1, \
-#                        in_boundary = [(0,20),(10,60),(0,20)])
-#        
+            
+def test_blood():
+    '''run the blood simulation and plot various figures'''
+    times = [1]
+    dose_fields = [np.zeros((10,10,10))]
+    time_gaps = [1]
+    dt = 0.1
+    vector_fields = Const_vector_field(10,10,10,1,2,3)
+    bloods = simulate_blood_flow(dose_fields, vector_fields, times, time_gaps, dt, blood_density= 0.1, \
+                        in_boundary = [(0,5),(3,8),(2,8)])
+   
+
 def animate_blood():
     '''TODO - animates the flow of blood through a space
     See matplotlab.animate module
     '''
     pass
     
-
-if __name__ == '__main__': 
-
-#   start time
-    start = time.time()
-#    for n in [1]:
-#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-    vector_field = Const_vector_field(120,120,120,1,2,3)
-    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='x')    
-    #stop time
-    end = time.time()
-    print("Time to run: ", (end-start), "seconds")
+#
+#if __name__ == '__main__': 
+#
+##   start time
+#    start = time.time()
+##    for n in [1]:
+##        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
+#    vector_field = Const_vector_field(120,120,120,1,2,3)
+#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
+#    #stop time
+#    end = time.time()
+#    print("Time to run: ", (end-start), "seconds")
 
 
     

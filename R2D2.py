@@ -605,7 +605,20 @@ if __name__ == '__main__':
     print("Time to run: ", (end-start), "seconds")
 
     
-    
+def generate_vector_field(dim):
+    '''generate a vector field to simulate a real blood flow'''
+    x_dim, y_dim, z_dim = dim
+    vx_field = np.zeros(dim)
+    vy_field = np.zeros(dim)
+    vz_field = np.zeros(dim)
+    for i in range(x_dim):
+        for j in range(y_dim):
+            if i**2 + j**2 <= 20 & i**2 + j**2 >= 10:
+                vx_field[i = np.zeros(dim)
+                vy_field = np.zeros(dim)
+                vz_field = np.zeros(dim)
+                
+                    
     
     
 

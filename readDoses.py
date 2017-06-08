@@ -27,6 +27,7 @@ class Dose(object):
         self.dose_field = dose_field # a list of dose_field
         self.time_on = time_on
         self.time_gap = time_gap
+        (self.x_dim, self.y_dim, self.z_dim) = self.dose_field[0].shape
     
         
     def get_dose_field(self):
@@ -53,4 +54,13 @@ class Dose(object):
     
     def match_field(self, dimensions):
         '''resize the dose_field to have required dimensions''' 
-        pass
+        if (self.x_dim, self.y_dim, self.z_dim) != dimensions:
+            new_dose_field = []
+            for i in self.dose_field: 
+                new_field = np.zeros(dimensions)
+                new_field[0:self.x_dim, 0:self.y_dim, 0:self.z_dim] = i
+                new_dose_field.append(new_field)                
+            self.dose_field = new_dose_field
+        
+        
+        

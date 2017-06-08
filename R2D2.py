@@ -465,25 +465,25 @@ def simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_d
 
         
 
-def make_pdf(blood_cells):
+def make_pdf(bloods):
     '''make a probability density function which will graph blood dose vs. 
     volume of blood (which will be fraction of total blood for 1D)
     Assumes blood_cells is a list of blood objects, all of which have varying
     doses
     '''
     #find the doses of all the cells, append to doses list
-    total = len(blood_cells)
+    total = len(bloods)
     doses = []
-    for cell in blood_cells:
+    for cell in bloods:
         doses.append(cell.get_dose())
     hist, bins = np.histogram(doses, bins='fd') #normed = True instead?
     bin_centers = (bins[1:]+bins[:-1])*0.5
     return (bin_centers,hist) #returned this way to make easier to plot later
     
-def plot_pdf(blood_cells):
+def plot_pdf(bloods):
     '''plots the data from make_pdf'''
     #plot these doses on a histogram
-    bin_centers, hist = make_pdf(blood_cells)
+    bin_centers, hist = make_pdf(bloods)
 #    bin_centers, hist = make_pdf(blood_cells)
     plt.figure()
     plt.title("Probabilty Density Function")
@@ -494,15 +494,15 @@ def plot_pdf(blood_cells):
     plt.show()
 
 
-def make_dvh(blood_cells): 
+def make_dvh(bloods): 
     '''
     Note - this is independent from the pdf and cdf functions now to avoid
     going through all the blood cells multiple times
     '''
-    total = len(blood_cells)
+    total = len(bloods)
     print("plotting ", total, " cells")
     doses = []
-    for cell in blood_cells:
+    for cell in bloods:
         doses.append(cell.get_dose())
     hist, bins = np.histogram(doses, bins='fd') #normed or density = True instead?
     bin_centers = (bins[1:]+bins[:-1])*0.5
@@ -510,21 +510,33 @@ def make_dvh(blood_cells):
     return (bin_centers,dvh)
     
            
-def plot_dvh(dose_fields, times, time_gaps, dt, blood_d = 1):      
-    blood_cells = simulate_blood_flow(dose_fields, times, time_gaps, \
-                                      dt, blood_density = blood_d)
-    bin_centers, dvh = make_dvh(blood_cells)
+#def plot_dvh(dose_fields, times, time_gaps, dt, blood_d = 1):      
+#    blood_cells = simulate_blood_flow(dose_fields, times, time_gaps, \
+#                                      dt, blood_density = blood_d)
+#    bin_centers, dvh = make_dvh(blood_cells)
+#    plt.figure()
+#    num_bloods = len(blood_cells)
+#    plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
+#              "\nBlood Density: " + str(blood_d))            
+#    plt.xlabel("Dose (Gray)")
+#    plt.ylabel("Volume (%)")
+#    plt.ylim(0,100)
+#    print(num_bloods)
+#    plt.plot(bin_centers, (num_bloods - dvh)/num_bloods*100, c='green')
+#    plt.grid(True)
+
+def plot_dvh(bloods,blood_density):
+    bin_centers, dvh = make_dvh(bloods)
     plt.figure()
-    num_bloods = len(blood_cells)
+    num_bloods = len(bloods)
     plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
-              "\nBlood Density: " + str(blood_d))            
+              "\nBlood Density: " + str(blood_density))            
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Volume (%)")
     plt.ylim(0,100)
     print(num_bloods)
     plt.plot(bin_centers, (num_bloods - dvh)/num_bloods*100, c='green')
     plt.grid(True)
-
     
 def plot_positions(blood, color, x_min = 0, x_max = 120, y_min = 0, y_max = 120):
     #NOTE - default arguments were added her to define the dimensions of the graph
@@ -567,14 +579,15 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
 def test_blood():
     '''run the blood simulation and plot various figures'''
     times = [1]
-    dose_fields = [np.zeros((10,10,10))]
+    dose_fields = [np.random.rand(50,50,50)]
     time_gaps = [1]
     dt = 0.1
-    vector_field = Const_vector_field(10,10,10,1,2,3)
-    bloods = simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density= 0.1, \
-                        in_boundary = [(0,5),(3,8),(2,8)])
+    vector_field = Const_vector_field(50,50,50,1,2,3)
+    blood_density = 1
+    bloods = simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density, \
+                        in_boundary = [(0,5),(10,30),(20,35)])
    
-
+    plot_dvh(bloods,blood_density)
 def animate_blood():
     '''TODO - animates the flow of blood through a space
     See matplotlab.animate module
@@ -583,16 +596,25 @@ def animate_blood():
     
 
 if __name__ == '__main__': 
-
-#   start time
     start = time.time()
-#    for n in [1]:
-#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-    vector_field = Const_vector_field(120,120,120,1,2,3)
-    test_plot_positions(1000,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
-    #stop time
+    test_blood()
     end = time.time()
     print("Time to run: ", (end-start), "seconds")
+
+    
+    
+    
+    
+
+##   start time
+#    start = time.time()
+##    for n in [1]:
+##        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
+#    vector_field = Const_vector_field(120,120,120,1,2,3)
+#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
+#    #stop time
+#    end = time.time()
+#    print("Time to run: ", (end-start), "seconds")
 
 
     

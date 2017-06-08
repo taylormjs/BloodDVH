@@ -18,4 +18,5 @@ time_off = [gap12,gap23]
 
 doses = [f1,f2,f3]
 
-#class Dose
+#creat a class for Dose
+

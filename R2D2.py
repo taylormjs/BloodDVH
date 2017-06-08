@@ -188,6 +188,7 @@ class Vector_field(object):
             return "Vector_field w/ dim: " + str((self.x_dim, self.y_dim, \
                                                          self.z_dim))
 
+        
 class Const_vector_field(Vector_field):
         '''Each position has an associated velocity in x,y, and z directions as 
             well as an associated dose'''
@@ -198,48 +199,20 @@ class Const_vector_field(Vector_field):
             #TODO - Adjust this later to match up with the velocity fields  in vdx files 
             ''' 
             self.vx, self.vy, self.vz = vx, vy, vz
-<<<<<<< HEAD
             self.velocity = (self.vx, self.vy, self.vz)
-            #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z
-            self.vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
-            self.vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
-            self.vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz  
-            self.field = np.zeros((x_dim, y_dim, z_dim)) #used to get size and number of units in field
-        
-        def get_vx_at_position(self,x,y,z):
-            return self.vx_field[int(x)][int(y)][int(z)]       
-        
-        def get_vy_at_position(self,x,y,z):
-            return self.vy_field[int(x)][int(y)][int(z)] 
-        
-        def get_vz_at_position(self,x,y,z):
-            return self.vz_field[int(x)][int(y)][int(z)]   
-        
-        def get_size(self):
-            return self.field.size #total number of cells in the matrix
-
-        def get_vx_field(self):
-            return self.vx_field                       
-
-        def get_vy_field(self):
-            return self.vy_field  
-        
-        def get_vz_field(self):
-            return self.vz_field  
-        def get_v_square(self):
-            return self.vx_field**2 + self.vy_field**2 + self.vz_field**2
-        def get_velocity_fields(self):
-            return [self.vx_field, self.vy_field, self.vz_field]   
+            velocity = (self.vx, self.vy, self.vz)
+            vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
+            vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
+            vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz  
+            Vector_field.__init__(self,vx_field, vy_field, vz_field)
+ 
 
 class artery_v_field(Vector_field):
     '''a velocity vector field inside of an artery
     '''
-    def __init__(self, x_dim, y_dim, z_dim, filename):
-        
-        Vector_field.__init__(self,x_dim, y_dim, z_dim)  
-#        self.vx_field = vx_field   
-#        self.vy_field = vy_field  
-#        self.vz_field = vz_field  
+    def __init__(self, vx_field,vy_field,vz_field):       
+        Vector_field.__init__(self,vx_field,vy_field,vz_field)  
+
     def set_vx_field(self,vx_field):
         self.vx_field = vx_field
         
@@ -248,15 +221,6 @@ class artery_v_field(Vector_field):
         
     def set_vz_field(self,vz_field):
         self.vz_field = vz_field
-=======
-            velocity = (self.vx, self.vy, self.vz)
-            vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
-            vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
-            vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz  
-            Vector_field.__init__(self,vx_field, vy_field, vz_field)
-  
-            
->>>>>>> 1872444dd9756cedb9c23a98896844696ad22d0c
         
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \

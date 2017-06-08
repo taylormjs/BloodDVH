@@ -20,3 +20,37 @@ doses = [f1,f2,f3]
 
 #creat a class for Dose
 
+class Dose(object):
+    ''' A Blood voxel with an position and dose
+    '''
+    def __init__(self, dose_field , time_on, time_gap = [0]):
+        self.dose_field = dose_field # a list of dose_field
+        self.time_on = time_on
+        self.time_gap = time_gap
+    
+        
+    def get_dose_field(self):
+        return self.dose_field  
+    
+    def get_dose_time(self):
+        return self.time_on
+    
+    def get_dose_time_gap(self):
+        return self.time_gap
+    
+    def add_new_dose(self, dose):
+        new_dose = dose.get_dose_field()
+        new_time_on = dose.get_dose_time()
+        new_time_gap = dose.get_dose_time_gap()
+        self.dose_field += new_dose 
+        self.time_on += new_time_on
+        self.time_gap += new_time_gap
+        
+    
+    def rotate(self, axis = 0):
+        '''rotate the dose field along x,y or z axis'''
+        pass
+    
+    def match_field(self, dimensions):
+        '''resize the dose_field to have required dimensions''' 
+        pass

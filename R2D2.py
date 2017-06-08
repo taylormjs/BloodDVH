@@ -183,7 +183,7 @@ class Vector_field(object):
 class Const_vector_field(Vector_field):
         '''Each position has an associated velocity in x,y, and z directions as 
             well as an associated dose'''
-            #NOTE - vy does not have a default value of 0 in 2d version
+            #NOTE - vy dose not have a default value of 0 in 2d version
         def __init__(self, x_dim, y_dim, z_dim, vx, vy, vz): #change the order of these later
             '''Assumes x_dim is a scalar of the number of units in our matrix
             In one dimension, y_dim and z_dim should just be 1
@@ -425,7 +425,7 @@ def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
     return in_bloods
 
 
-def simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density= 1, \
+def simulate_blood_flow(dose, vector_field, dt, blood_density= 1, \
                         in_boundary = [(0,20),(10,60),(0,20)]):
     '''generate blood objects and velocity vector fields, then runs the simulation
     NOTE - assumes the starting point is when the first field turns on
@@ -436,7 +436,9 @@ def simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_d
     #initialize vector field, make # of blood voxels based on blood density
     num_bloods = int(blood_density * vector_field.get_size()) #total number of the blood
     (x_dim , y_dim ,z_dim) = vector_field.get_dimensions()
-    print(x_dim,y_dim,z_dim)
+    dose_fields = dose.get_dose_field()
+    times = dose.get_dose_time()
+    time_gaps = dose.get_dose_time_gap()
     in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
     out_bloods = []
     plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
@@ -579,12 +581,13 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
 def test_blood():
     '''run the blood simulation and plot various figures'''
     times = [1]
-    dose_fields = [np.random.rand(50,50,50)]
+    dose_field = [np.random.rand(50,50,50)]
     time_gaps = [1]
     dt = 0.1
     vector_field = Const_vector_field(50,50,50,1,2,3)
     blood_density = 1
-    bloods = simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density, \
+    dose = Dose(dose_field,times,time_gaps)
+    bloods = simulate_blood_flow(dose, vector_field, dt, blood_density, \
                         in_boundary = [(0,5),(10,30),(20,35)])
    
     plot_dvh(bloods,blood_density)

@@ -12,6 +12,7 @@ import math
 import random
 from readDoses import *
 import time
+from dose_field_plot import *
 
 
 class Blood(object):
@@ -54,13 +55,6 @@ class Blood(object):
         return "Blood at " + str(self.get_position()) + " w/ Dose of " + \
                 str(self.get_dose())
                 
-        
-
-#
-#pos = Position(1,2,3)
-#print(pos)
-#blood_1 = Blood(pos, 4)
-##print(blood_1)
 
 class Position(object):
     '''A position within the blood vessel. 
@@ -111,12 +105,15 @@ class Vector_field(object):
     '''
     '''Each position has an associated velocity in x,y, and z directions as 
     well as an associated dose'''
-    def __init__(self, x_dim, y_dim, z_dim): #change the order of these later
-        '''Assumes x_dim is a scalar of the number of units in our matrix
-        In one dimension, y_dim and z_dim should just be 1
+    def __init__(self, vx_field, vy_field, vz_field): #inputs vx,vy,vz from vtk or csv files
+        '''vx_field, vy_field, vz_field are ndarrays
         #TODO - Adjust this later to match up with the velocity fields  in vdx files 
-        '''             
-        self.x_dim, self.y_dim, self.z_dim = x_dim, y_dim, z_dim
+        ''' 
+        self.vx_field = vx_field
+        self.vy_field = vy_field
+        self.vz_field = vz_field
+        self.v_square = self.get_v_square()        
+        (self.x_dim, self.y_dim, self.z_dim) = vx_field.shape
         #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z  
         
     def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
@@ -131,6 +128,29 @@ class Vector_field(object):
         '''
         pass #TODO - later
        
+    def get_vx_at_position(self,x,y,z):
+        return self.vx_field[int(x)][int(y)][int(z)]       
+        
+    def get_vy_at_position(self,x,y,z):
+        return self.vy_field[int(x)][int(y)][int(z)] 
+        
+    def get_vz_at_position(self,x,y,z):
+        return self.vz_field[int(x)][int(y)][int(z)]   
+        
+    def get_vx_field(self):
+        return self.vx_field                       
+
+    def get_vy_field(self):
+        return self.vy_field  
+        
+    def get_vz_field(self):
+        return self.vz_field  
+        
+    def get_v_square(self):
+        return self.vx_field**2 + self.vy_field**2 + self.vz_field**2
+        
+    def get_velocity_fields(self):
+        return [self.vx_field, self.vy_field, self.vz_field]             
     
     def get_dimensions(self):
         return (self.x_dim, self.y_dim, self.z_dim)
@@ -143,8 +163,10 @@ class Vector_field(object):
     
     def get_z_dim(self):
         return self.z_dim
-        
-        
+    
+    def get_size(self):
+        return self.vx_field.size
+               
     def is_position_in_dose_field(self, position):
         '''Returns true if the input position is within the dose_field
         '''
@@ -174,9 +196,9 @@ class Const_vector_field(Vector_field):
             '''Assumes x_dim is a scalar of the number of units in our matrix
             In one dimension, y_dim and z_dim should just be 1
             #TODO - Adjust this later to match up with the velocity fields  in vdx files 
-            '''     
-            Vector_field.__init__(self,x_dim, y_dim, z_dim)
+            ''' 
             self.vx, self.vy, self.vz = vx, vy, vz
+<<<<<<< HEAD
             self.velocity = (self.vx, self.vy, self.vz)
             #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z
             self.vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
@@ -226,10 +248,19 @@ class artery_v_field(Vector_field):
         
     def set_vz_field(self,vz_field):
         self.vz_field = vz_field
+=======
+            velocity = (self.vx, self.vy, self.vz)
+            vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
+            vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
+            vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz  
+            Vector_field.__init__(self,vx_field, vy_field, vz_field)
+  
+            
+>>>>>>> 1872444dd9756cedb9c23a98896844696ad22d0c
         
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
-               x_max=1,y_max=120,z_max=120):
+               x_max=120,y_max=120,z_max=120):
     '''makes num_blood_cells objects and gives them all an initial position
     '''
     bloods =[]
@@ -330,51 +361,68 @@ def gen_new_blood_3d(out_blood_per_t,vector_field, in_boundary,direction='z'):
     z_boundary = in_boundary[2]
     x_lo = x_boundary[0]
     x_hi = x_boundary[1]
+    x_len = x_hi -x_lo
     y_lo = y_boundary[0]
     y_hi = y_boundary[1]
+    y_len = y_hi -y_lo
     z_lo = z_boundary[0]
     z_hi = z_boundary[1]
-    v_square = vector_field.get_v_square()
-    
-    #Find the velocities at the units adjacent to the boundary
-    # xy plane 
-    mini_field = v_square[x_lo:x_hi+1,y_lo:y_hi+1, 0]   
-    total = mini_field.sum()
-    prob_field =  mini_field / total
+    z_len = z_hi -z_lo
+    v_square = vector_field.v_square
+    gen_bloods = []
+    if direction == 'z':
+        mini_field = v_square[x_lo:x_hi+1,y_lo:y_hi+1, 0]   
+        total = mini_field.sum()
+        prob_field =  mini_field / total
     #generate a 1D list of number_bloods leaving using np.random.choice()
     #with probabilities defined, this will be the positions of the new blood
     #units
-    choose_ind = np.random.choice(prob_field.size,out_blood_per_t, p = prob_field.flatten()) #flatten the matrix to 1-d 
-    ran = np.random.random(out_blood_per_t)                          
-    gen_bloods = []
-    for i in range(out_blood_per_t):
-        x = choose_ind[i]//y_hi#reconsturct the matrix
-        y = choose_ind[i] % y_hi
-        x = x + np.random.random() + x_lo 
-        y = y + np.random.random() + y_lo                        
-        gen_blood = Blood(Position(x,y,0))                  
-        gen_bloods.append(gen_blood)
+        choose_ind = np.random.choice(prob_field.size,out_blood_per_t, \
+                                      p = prob_field.flatten()) #flatten the matrix to 1-d                           
+
+        for i in range(out_blood_per_t):
+            x = choose_ind[i]//y_len #reconsturct the matrix
+            y = choose_ind[i] % y_len
+            x = x + np.random.random() + x_lo 
+            y = y + np.random.random() + y_lo                        
+            gen_blood = Blood(Position(x,y,0))                  
+            gen_bloods.append(gen_blood)
+    
+    elif direction == 'y':
+        mini_field = v_square[x_lo:x_hi+1 ,0, z_lo:z_hi+1]   
+        total = mini_field.sum()
+        prob_field =  mini_field / total
+        choose_ind = np.random.choice(prob_field.size,out_blood_per_t, \
+                                      p = prob_field.flatten())                         
+
+        for i in range(out_blood_per_t):
+            x = choose_ind[i]//z_len #reconsturct the matrix
+            z = choose_ind[i] % z_len
+            x = x + np.random.random() + x_lo 
+            z = z + np.random.random() + z_lo                        
+            gen_blood = Blood(Position(x,0,z))                  
+            gen_bloods.append(gen_blood)
+    elif direction == 'x':
+        mini_field = v_square[0, y_lo:y_hi+1, z_lo:z_hi+1]   
+        total = mini_field.sum()
+        prob_field =  mini_field / total
+        choose_ind = np.random.choice(prob_field.size,out_blood_per_t, \
+                                      p = prob_field.flatten()) 
+        #flatten the matrix to 1d
+        for i in range(out_blood_per_t):
+            y = choose_ind[i]//z_len #reconsturct the matrix
+            z = choose_ind[i] % z_len
+            y = y + np.random.random() + y_lo 
+            z = z + np.random.random() + z_lo                         
+            gen_blood = Blood(Position(0,y,z))                 
+            gen_bloods.append(gen_blood)      
+    
     return gen_bloods
 
-
-
-def test_gen_new_blood():
-    '''Tests the Generation of new Blood 
-    '''
-    out_blood = make_blood(17)
-    field = Const_vector_field(1,120,120,0,4,2)
-    in_boundary = [(0,1),(10,20),(10,20)]
-    gen_blood = gen_new_blood_yz(10,field, in_boundary)
-    print(len(gen_blood))
-    for b in gen_blood:
-        print(b)
-        
-#test_gen_new_blood()
-
     
     
     
-def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,1),(0,120),(0,1)], axis = 'y'):
+def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(10,60),(0,20)], direction = 'z'):
     '''Updates the positions of all the bloods still within the vector field
     in one time step with length dt (a float)
     in_bloods - those still within defined vector field
@@ -403,12 +451,13 @@ def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,1),(0,
             in_bloods.remove(i)
             out_blood_count += 1
     #Generate new bloods, one blood unit for each blood unit out
-    in_bloods += gen_new_blood_3d(out_blood_count,vector_field, in_boundary, axis)
-
- 
+    
+    in_bloods += gen_new_blood_3d(out_blood_count,vector_field, in_boundary, direction)
+#    print('the # bloods flows out' , out_blood_count)
+# 
 
 def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
-                         dose_matrix,total_time, dt, in_boundary = (0,120)):
+                         dose_matrix,total_time, dt, in_boundary ):
     """simulate the flow of blood while the radiation beam IS ON, assumes
     a dose_matrix is a two dimension matrix of the dose at each point in a 
     2d space
@@ -417,13 +466,13 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
     while t <= total_time:
         dose_per_time = dose_matrix / total_time #dose_per_time a dose matrix per unit time
         add_dose_for_allblood(in_bloods,dose_per_time, vector_field,dt) 
-        bloods_flow(in_bloods, out_bloods, vector_field,dt) #TODO - add inboundary as argument later?
+        bloods_flow(in_bloods, out_bloods, vector_field,dt,in_boundary) #TODO - add inboundary as argument later?
         t = t + dt
         
     return in_bloods
 
 def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
-                       time_gap, dt, in_boundary = (0,120)):
+                       time_gap, dt, in_boundary):
     '''simulate blood flow while radiation beam IS OFF. 
     time_gap is the amount of time the beam is off (seconds), dt is length
     of each time step.
@@ -431,13 +480,13 @@ def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
     t = 0
     while t<= time_gap:
         #only update the position of each blood voxel
-        bloods_flow(in_bloods, out_bloods, vector_field, dt)
+        bloods_flow(in_bloods, out_bloods, vector_field, dt,in_boundary)
         t += dt
     return in_bloods
 
 
-def simulate_blood_flow(dose_fields, times, time_gaps, dt, blood_density= 1, \
-                        in_boundary = (0,30)):
+def simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density= 1, \
+                        in_boundary = [(0,20),(10,60),(0,20)]):
     '''generate blood objects and velocity vector fields, then runs the simulation
     NOTE - assumes the starting point is when the first field turns on
     dose_fields: a list of dose_field matrices
@@ -445,17 +494,20 @@ def simulate_blood_flow(dose_fields, times, time_gaps, dt, blood_density= 1, \
     time_gaps: the time between doses, while blood is still moving
     '''
     #initialize vector field, make # of blood voxels based on blood density
-    vector_field = Const_vector_field(1,120,120,0,5,0) #TODO = change this vy
     num_bloods = int(blood_density * vector_field.get_size()) #total number of the blood
-    in_bloods = make_blood(num_bloods)
+    (x_dim , y_dim ,z_dim) = vector_field.get_dimensions()
+    print(x_dim,y_dim,z_dim)
+    in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
     out_bloods = []
-
+    plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
     for i in range(len(times)):
         #Add dose
-        in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], times[i], dt)
+        in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], \
+                                                    times[i], dt, in_boundary)
         try:
             #then circulate blood without dose
-            in_bloods = blood_flow_no_beam(in_bloods_after_dose, out_bloods, vector_field, time_gaps[i], dt)
+            in_bloods = blood_flow_no_beam(in_bloods_after_dose, out_bloods, vector_field, time_gaps[i],\
+                                           dt,in_boundary)
         except IndexError: #because len(time_gaps) < len(times); 2 compared to 3, for ex.
             pass
     #bloods still in vector fields and those that have left should be returned in the 
@@ -467,30 +519,31 @@ def simulate_blood_flow(dose_fields, times, time_gaps, dt, blood_density= 1, \
     print("# of bloods IN velocity field: " ,len(in_bloods)) 
     print("Original # of bloods", num_bloods)
     print("# of bloods generated", (len(out_bloods) + len(in_bloods) - num_bloods))
+    plot_bloods_3d(in_bloods, c = 'b',m = 'o')# fianl postion of the bloods 
 
     return in_bloods + out_bloods
 
         
 
-def make_pdf(blood_cells):
+def make_pdf(bloods):
     '''make a probability density function which will graph blood dose vs. 
     volume of blood (which will be fraction of total blood for 1D)
     Assumes blood_cells is a list of blood objects, all of which have varying
     doses
     '''
     #find the doses of all the cells, append to doses list
-    total = len(blood_cells)
+    total = len(bloods)
     doses = []
-    for cell in blood_cells:
+    for cell in bloods:
         doses.append(cell.get_dose())
     hist, bins = np.histogram(doses, bins='fd') #normed = True instead?
     bin_centers = (bins[1:]+bins[:-1])*0.5
     return (bin_centers,hist) #returned this way to make easier to plot later
     
-def plot_pdf(blood_cells):
+def plot_pdf(bloods):
     '''plots the data from make_pdf'''
     #plot these doses on a histogram
-    bin_centers, hist = make_pdf(blood_cells)
+    bin_centers, hist = make_pdf(bloods)
 #    bin_centers, hist = make_pdf(blood_cells)
     plt.figure()
     plt.title("Probabilty Density Function")
@@ -501,15 +554,15 @@ def plot_pdf(blood_cells):
     plt.show()
 
 
-def make_dvh(blood_cells): 
+def make_dvh(bloods): 
     '''
     Note - this is independent from the pdf and cdf functions now to avoid
     going through all the blood cells multiple times
     '''
-    total = len(blood_cells)
+    total = len(bloods)
     print("plotting ", total, " cells")
     doses = []
-    for cell in blood_cells:
+    for cell in bloods:
         doses.append(cell.get_dose())
     hist, bins = np.histogram(doses, bins='fd') #normed or density = True instead?
     bin_centers = (bins[1:]+bins[:-1])*0.5
@@ -517,21 +570,33 @@ def make_dvh(blood_cells):
     return (bin_centers,dvh)
     
            
-def plot_dvh(dose_fields, times, time_gaps, dt, blood_d = 1):      
-    blood_cells = simulate_blood_flow(dose_fields, times, time_gaps, \
-                                      dt, blood_density = blood_d)
-    bin_centers, dvh = make_dvh(blood_cells)
+#def plot_dvh(dose_fields, times, time_gaps, dt, blood_d = 1):      
+#    blood_cells = simulate_blood_flow(dose_fields, times, time_gaps, \
+#                                      dt, blood_density = blood_d)
+#    bin_centers, dvh = make_dvh(blood_cells)
+#    plt.figure()
+#    num_bloods = len(blood_cells)
+#    plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
+#              "\nBlood Density: " + str(blood_d))            
+#    plt.xlabel("Dose (Gray)")
+#    plt.ylabel("Volume (%)")
+#    plt.ylim(0,100)
+#    print(num_bloods)
+#    plt.plot(bin_centers, (num_bloods - dvh)/num_bloods*100, c='green')
+#    plt.grid(True)
+
+def plot_dvh(bloods,blood_density):
+    bin_centers, dvh = make_dvh(bloods)
     plt.figure()
-    num_bloods = len(blood_cells)
+    num_bloods = len(bloods)
     plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
-              "\nBlood Density: " + str(blood_d))            
+              "\nBlood Density: " + str(blood_density))            
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Volume (%)")
     plt.ylim(0,100)
     print(num_bloods)
     plt.plot(bin_centers, (num_bloods - dvh)/num_bloods*100, c='green')
     plt.grid(True)
-
     
 def plot_positions(blood, color, x_min = 0, x_max = 120, y_min = 0, y_max = 120):
     #NOTE - default arguments were added her to define the dimensions of the graph
@@ -558,19 +623,31 @@ def plot_positions(blood, color, x_min = 0, x_max = 120, y_min = 0, y_max = 120)
     plt.plot(z_pos, y_pos, color)
  
     
-def test_plot_positions(num_bloods, vector_field, time, dt):
+def test_plot_positions(num_bloods, vector_field, time, dt,\
+                        in_boundary = [(0,10),(30,60),(70,100)],direction ='x'):
     in_bloods = make_blood(num_bloods)
     out_bloods = []
     #plot initial positions
-    plot_positions(in_bloods, 'ro')
+    plot_bloods_3d(in_bloods, c = 'r', m = '^')
     #flow blood and plot final positions
     t = 0
     while t <time:
-        bloods_flow(in_bloods, out_bloods, vector_field, dt, axis = 'y', in_boundary = [(0,1),(0,40),(10,20)])
+        bloods_flow(in_bloods, out_bloods, vector_field, dt, in_boundary ,direction)
         t += dt
-    plot_positions(in_bloods, 'bo')
+    plot_bloods_3d(in_bloods, c = 'b',m = 'o')
             
-    
+def test_blood():
+    '''run the blood simulation and plot various figures'''
+    times = [1]
+    dose_fields = [np.random.rand(50,50,50)]
+    time_gaps = [1]
+    dt = 0.1
+    vector_field = Const_vector_field(50,50,50,1,2,3)
+    blood_density = 1
+    bloods = simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density, \
+                        in_boundary = [(0,5),(10,30),(20,35)])
+   
+    plot_dvh(bloods,blood_density)
 def animate_blood():
     '''TODO - animates the flow of blood through a space
     See matplotlab.animate module
@@ -579,15 +656,25 @@ def animate_blood():
     
 
 if __name__ == '__main__': 
-
-#   start time
     start = time.time()
-#    for n in [1]:
-#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py    
-    test_plot_positions(100, Const_vector_field(1,120,120,0,1,3), 20, .1)    
-    #stop time
+    test_blood()
     end = time.time()
     print("Time to run: ", (end-start), "seconds")
+
+    
+    
+    
+    
+
+##   start time
+#    start = time.time()
+##    for n in [1]:
+##        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
+#    vector_field = Const_vector_field(120,120,120,1,2,3)
+#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
+#    #stop time
+#    end = time.time()
+#    print("Time to run: ", (end-start), "seconds")
 
 
     

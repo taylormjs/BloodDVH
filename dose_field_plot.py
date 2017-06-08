@@ -32,3 +32,22 @@ def plot_2d(matrix):
     surf = ax.plot_surface(X, Y, Z, cmap=cm.cool,
                        linewidth=0, antialiased=False)
     plt.show()
+    
+def plot_bloods_3d(bloods, c = 'r',m ='o'):
+    '''plot the postion of the blood in 3d'''
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    xs = []
+    ys = []
+    zs = []
+    for i in bloods:
+        (x,y,z) = i.get_position().get_position()
+        xs.append(x)
+        ys.append(y)
+        zs.append(z)
+    ax.scatter(xs, ys, zs, c=c, marker=m)
+
+    ax.set_xlabel('X ')
+    ax.set_ylabel('Y ')
+    ax.set_zlabel('Z ')
+    plt.show()

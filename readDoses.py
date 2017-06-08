@@ -17,3 +17,6 @@ time_on = [t1,t2,t3]
 time_off = [gap12,gap23]
 
 doses = [f1,f2,f3]
+
+#creat a class for Dose
+

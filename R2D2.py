@@ -397,7 +397,7 @@ def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(1
 # 
 
 def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
-                         dose_matrix,total_time, dt, in_boundary = [(0,20),(10,60),(0,20)]):
+                         dose_matrix,total_time, dt, in_boundary ):
     """simulate the flow of blood while the radiation beam IS ON, assumes
     a dose_matrix is a two dimension matrix of the dose at each point in a 
     2d space
@@ -406,13 +406,13 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
     while t <= total_time:
         dose_per_time = dose_matrix / total_time #dose_per_time a dose matrix per unit time
         add_dose_for_allblood(in_bloods,dose_per_time, vector_field,dt) 
-        bloods_flow(in_bloods, out_bloods, vector_field,dt) #TODO - add inboundary as argument later?
+        bloods_flow(in_bloods, out_bloods, vector_field,dt,in_boundary) #TODO - add inboundary as argument later?
         t = t + dt
         
     return in_bloods
 
 def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
-                       time_gap, dt, in_boundary = [(0,20),(10,60),(0,20)]):
+                       time_gap, dt, in_boundary):
     '''simulate blood flow while radiation beam IS OFF. 
     time_gap is the amount of time the beam is off (seconds), dt is length
     of each time step.
@@ -420,12 +420,12 @@ def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
     t = 0
     while t<= time_gap:
         #only update the position of each blood voxel
-        bloods_flow(in_bloods, out_bloods, vector_field, dt)
+        bloods_flow(in_bloods, out_bloods, vector_field, dt,in_boundary)
         t += dt
     return in_bloods
 
 
-def simulate_blood_flow(dose_fields, vector_fields, times, time_gaps, dt, blood_density= 1, \
+def simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density= 1, \
                         in_boundary = [(0,20),(10,60),(0,20)]):
     '''generate blood objects and velocity vector fields, then runs the simulation
     NOTE - assumes the starting point is when the first field turns on
@@ -442,10 +442,12 @@ def simulate_blood_flow(dose_fields, vector_fields, times, time_gaps, dt, blood_
     plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
     for i in range(len(times)):
         #Add dose
-        in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], times[i], dt)
+        in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], \
+                                                    times[i], dt, in_boundary)
         try:
             #then circulate blood without dose
-            in_bloods = blood_flow_no_beam(in_bloods_after_dose, out_bloods, vector_field, time_gaps[i], dt)
+            in_bloods = blood_flow_no_beam(in_bloods_after_dose, out_bloods, vector_field, time_gaps[i],\
+                                           dt,in_boundary)
         except IndexError: #because len(time_gaps) < len(times); 2 compared to 3, for ex.
             pass
     #bloods still in vector fields and those that have left should be returned in the 
@@ -568,8 +570,8 @@ def test_blood():
     dose_fields = [np.zeros((10,10,10))]
     time_gaps = [1]
     dt = 0.1
-    vector_fields = Const_vector_field(10,10,10,1,2,3)
-    bloods = simulate_blood_flow(dose_fields, vector_fields, times, time_gaps, dt, blood_density= 0.1, \
+    vector_field = Const_vector_field(10,10,10,1,2,3)
+    bloods = simulate_blood_flow(dose_fields, vector_field, times, time_gaps, dt, blood_density= 0.1, \
                         in_boundary = [(0,5),(3,8),(2,8)])
    
 
@@ -579,18 +581,18 @@ def animate_blood():
     '''
     pass
     
-#
-#if __name__ == '__main__': 
-#
-##   start time
-#    start = time.time()
-##    for n in [1]:
-##        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-#    vector_field = Const_vector_field(120,120,120,1,2,3)
-#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
-#    #stop time
-#    end = time.time()
-#    print("Time to run: ", (end-start), "seconds")
+
+if __name__ == '__main__': 
+
+#   start time
+    start = time.time()
+#    for n in [1]:
+#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
+    vector_field = Const_vector_field(120,120,120,1,2,3)
+    test_plot_positions(1000,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
+    #stop time
+    end = time.time()
+    print("Time to run: ", (end-start), "seconds")
 
 
     

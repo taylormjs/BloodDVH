@@ -93,6 +93,14 @@ class Position(object):
         new_x, new_y, new_z = (old_x + dx), (old_y + dy), (old_z + dz)
         return Position (new_x, new_y, new_z)
     
+    def set_velocity(self, velocity):
+        '''Useful for reading in velocity files
+        '''
+        self.velocity = velocity
+        
+    def get_velocity(self):
+        return self.velocity
+    
     def __str__(self):
         return "Position: " + str((self.x, self.y, self.z))
         #'(' + str(self.x) + str(self.y) + str(self.z) + ')'
@@ -199,7 +207,25 @@ class Const_vector_field(Vector_field):
         def get_v_square(self):
             return self.vx_field**2 + self.vy_field**2 + self.vz_field**2
         def get_velocity_fields(self):
-            return [self.vx_field, self.vy_field, self.vz_field]                         
+            return [self.vx_field, self.vy_field, self.vz_field]   
+
+class artery_v_field(Vector_field):
+    '''a velocity vector field inside of an artery
+    '''
+    def __init__(self, x_dim, y_dim, z_dim, filename):
+        
+        Vector_field.__init__(self,x_dim, y_dim, z_dim)  
+#        self.vx_field = vx_field   
+#        self.vy_field = vy_field  
+#        self.vz_field = vz_field  
+    def set_vx_field(self,vx_field):
+        self.vx_field = vx_field
+        
+    def set_vy_field(self,vy_field):
+        self.vy_field = vy_field
+        
+    def set_vz_field(self,vz_field):
+        self.vz_field = vz_field
         
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \

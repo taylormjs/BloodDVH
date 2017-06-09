@@ -127,7 +127,33 @@ class Vector_field(object):
         return self.vy_field[int(x)][int(y)][int(z)] 
         
     def get_vz_at_position(self,x,y,z):
-        return self.vz_field[int(x)][int(y)][int(z)]   
+        return self.vz_field[int(x)][int(y)][int(z)] 
+    
+    def get_v_around(self,x,y,z):
+        '''find the velocity of its closet neighbors and return the average'''
+        vx_around = []
+        vy_around = []
+        vz_around = []
+        for i in [-1,1]:
+            for j in [-1,1]:
+                for k in [-1,1]:
+                    x_new = int(x+i)
+                    y_new = int(y+j)
+                    z_new = int(z+k)
+                    if self.is_position_in_vector_field(Position(x_new,y_new,z_new)):
+                        vx_around.append(self.vx_field[x_new,y_new,z_new])
+                        vy_around.append(self.vy_field[x_new,y_new,z_new])
+                        vz_around.append(self.vz_field[x_new,y_new,z_new])
+                    else:
+                        vx_around.append(0)
+                        vy_around.append(0)
+                        vz_around.append(0)
+        v_around = (np.array(vx_around).mean(),np.array(vy_around).mean(),\
+                    np.array(vz_around).mean())
+        
+        return v_around
+    
+        
         
     def get_vx_field(self):
         return self.vx_field                       
@@ -381,17 +407,30 @@ def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(1
         vx = vector_field.get_vx_at_position(x,y,z)
         vy = vector_field.get_vy_at_position(x,y,z)
         vz = vector_field.get_vz_at_position(x,y,z)
-        new_position = position.get_new_position(vx,vy,vz, dt)
-        #if new position still in field, update position
-        if vector_field.is_position_in_vector_field(new_position):
-            i.find_new_position(new_position)
-        else:
+        if (vx != 0)|((vy != 0))|((vz != 0)):
+            new_position = position.get_new_position(vx,vy,vz, dt)        
+            #if new position still in field, update position
+            if vector_field.is_position_in_vector_field(new_position):
+                i.find_new_position(new_position)
+            else:
             #move that blood from one list to another (all_bloods -> leaving_blods)
-            out_bloods.append(i)
-            in_bloods.remove(i)
-            out_blood_count += 1
+                out_bloods.append(i)
+                in_bloods.remove(i)
+                out_blood_count += 1
     #Generate new bloods, one blood unit for each blood unit out
-    
+        else:
+            vx,vy,vz = vector_field.get_v_around(x,y,z)
+            #try to get back to the vector field by going into the opposite directions
+            new_position = position.get_new_position(-vx,-vy,-vz, dt)  
+        
+            
+            if vector_field.is_position_in_vector_field(new_position):
+                i.find_new_position(new_position)
+            else:
+            #move that blood from one list to another (all_bloods -> leaving_blods)
+                out_bloods.append(i)
+                in_bloods.remove(i)
+                out_blood_count += 1
     in_bloods += gen_new_blood_3d(out_blood_count,vector_field, in_boundary, direction)
 #    print('the # bloods flows out' , out_blood_count)
 # 
@@ -462,6 +501,7 @@ def generate_vector_field(dim):
     return (vector_field,bloods)
 
 
+
 def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
                        time_gap, dt, in_boundary):
     '''simulate blood flow while radiation beam IS OFF. 
@@ -485,7 +525,7 @@ def simulate_blood_flow(in_bloods,dose, vector_field, dt, blood_density= 1, \
     time_gaps: the time between doses, while blood is still moving
     '''
     #initialize vector field, make # of blood voxels based on blood density
-    num_bloods = int(blood_density * vector_field.get_size()) #total number of the blood
+    num_bloods = len(in_bloods)#total number of the blood
     (x_dim , y_dim ,z_dim) = vector_field.get_dimensions()
     dose_fields = dose.get_dose_field()
     times = dose.get_dose_time()
@@ -631,12 +671,12 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
             
 def test_blood():
     '''run the blood simulation and plot various figures'''
-    times = [10,7]
+    times = [t1,t2,t3]
     dose_field = [np.random.rand(50,50,50),np.random.rand(50,50,50)]
-    time_gaps = [5,6]
+    time_gaps = [gap12,gap23]
     dt = 0.1
 #    vector_field = Const_vector_field(50,50,50,1,2,3)
-    vector_field,bloods = generate_vector_field((50,50,50))
+    vector_field,bloods = generate_vector_field((50,75,100))
     blood_density = 1
     dose = Dose(dose_field,times,time_gaps)
     bloods = simulate_blood_flow(bloods,dose, vector_field, dt, blood_density, \

@@ -6,6 +6,15 @@ mat = scipy.io.loadmat('DOSEFIELDS.mat')
 f1 = np.array([mat['f1']]) #has dimenstion 1*75*100
 f2 = np.array([mat['f2']]) #has dimenstion 1*75*100
 f3 = np.array([mat['f3']]) #has dimenstion 1*75*100
+def stack_field(field,times=1):
+    f1 = np.copy(field) 
+    new_field = np.copy(field)
+    for i in range(times):
+       new_field = np.stack(new_field,f1)
+    return new_field
+        
+
+        
 t1 = mat['t1'][0][0]
 t2 = mat['t2'][0][0]
 t3 = mat['t3'][0][0]

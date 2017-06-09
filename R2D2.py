@@ -411,6 +411,57 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
         
     return in_bloods
 
+#    
+#def generate_vector_field(dim):
+#    '''generate a vector field to simulate a real blood flow'''
+#    x_dim, y_dim, z_dim = dim
+#    vx_field = np.zeros(dim)
+#    vy_field = np.zeros(dim)
+#    vz_field = np.zeros(dim)
+#    bloods = []
+#    for i in range(x_dim):
+#        for j in range(y_dim):
+#            for k in range (z_dim):
+#                if i**2 + j**2 <= 20 & i**2 + j**2 >= 10:
+#                    vx_field[i,j,k] = 5#need to make more realitic 
+#                    vy_field[i,j,k] = 3
+#                    vz_field[i,j,k] = 1
+#                    x = i+ np.random.random()
+#                    y = j+ np.random.random()
+#                    z = k+ np.random.random()
+#                    blood = Blood(Position(x,y,z))
+#                    bloods.append(blood) 
+#            #add more condition for xz,yz plane
+#               
+#    vector_field = Vector_field(vx_field,vy_field,vz_field)
+#    return (vector_field,bloods)
+
+def generate_vector_field(dim):
+    '''generate a vector field to simulate a real blood flow'''
+    x_dim, y_dim, z_dim = dim
+    vx_field = np.zeros(dim)
+    vy_field = np.zeros(dim)
+    vz_field = np.zeros(dim)
+    (x,y,z) = (10,10,0)
+    (vx,vy,vz) = (0.1,0.2,1.0)
+    bloods = []
+    while (x < x_dim) & (y < y_dim) & (z <z_dim):
+        vx_field[int(x)-2:int(x)+2,int(y)-2:int(y)+2,int(z)].fill(vx)
+        vy_field[int(x)-2:int(x)+2,int(y)-2:int(y)+2,int(z)].fill(vy)
+        vz_field[int(x)-2:int(x)+2,int(y)-2:int(y)+2,int(z)].fill(vz)
+        new_bloods = make_blood(36,int(x)-2, int(y)-2, int(z), \
+               int(x)+2,int(y)+2,int(z))
+        bloods += new_bloods
+        x += vx
+        y += vy
+        z += vz
+
+            #add more condition for xz,yz plane
+               
+    vector_field = Vector_field(vx_field,vy_field,vz_field)
+    return (vector_field,bloods)
+
+
 def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
                        time_gap, dt, in_boundary):
     '''simulate blood flow while radiation beam IS OFF. 
@@ -425,7 +476,7 @@ def blood_flow_no_beam(in_bloods, out_bloods, vector_field, \
     return in_bloods
 
 
-def simulate_blood_flow(dose, vector_field, dt, blood_density= 1, \
+def simulate_blood_flow(in_bloods,dose, vector_field, dt, blood_density= 1, \
                         in_boundary = [(0,20),(10,60),(0,20)]):
     '''generate blood objects and velocity vector fields, then runs the simulation
     NOTE - assumes the starting point is when the first field turns on
@@ -439,7 +490,7 @@ def simulate_blood_flow(dose, vector_field, dt, blood_density= 1, \
     dose_fields = dose.get_dose_field()
     times = dose.get_dose_time()
     time_gaps = dose.get_dose_time_gap()
-    in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
+#    in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
     out_bloods = []
     plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
     for i in range(len(times)):
@@ -580,15 +631,16 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
             
 def test_blood():
     '''run the blood simulation and plot various figures'''
-    times = [1]
-    dose_field = [np.random.rand(50,50,50)]
-    time_gaps = [1]
+    times = [10,7]
+    dose_field = [np.random.rand(50,50,50),np.random.rand(50,50,50)]
+    time_gaps = [5,6]
     dt = 0.1
-    vector_field = Const_vector_field(50,50,50,1,2,3)
+#    vector_field = Const_vector_field(50,50,50,1,2,3)
+    vector_field,bloods = generate_vector_field((50,50,50))
     blood_density = 1
     dose = Dose(dose_field,times,time_gaps)
-    bloods = simulate_blood_flow(dose, vector_field, dt, blood_density, \
-                        in_boundary = [(0,5),(10,30),(20,35)])
+    bloods = simulate_blood_flow(bloods,dose, vector_field, dt, blood_density, \
+                        in_boundary = [(7,13),(7,13),(20,35)])
    
     plot_dvh(bloods,blood_density)
 def animate_blood():
@@ -604,22 +656,7 @@ if __name__ == '__main__':
     end = time.time()
     print("Time to run: ", (end-start), "seconds")
 
-    
-def generate_vector_field(dim):
-    '''generate a vector field to simulate a real blood flow'''
-    x_dim, y_dim, z_dim = dim
-    vx_field = np.zeros(dim)
-    vy_field = np.zeros(dim)
-    vz_field = np.zeros(dim)
-    for i in range(x_dim):
-        for j in range(y_dim):
-            if i**2 + j**2 <= 20 & i**2 + j**2 >= 10:
-                vx_field[i = np.zeros(dim)
-                vy_field = np.zeros(dim)
-                vz_field = np.zeros(dim)
-                
-                    
-    
+
     
 
 ##   start time

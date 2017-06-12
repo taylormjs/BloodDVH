@@ -15,16 +15,17 @@ Created on Tue Jun  6 11:09:47 2017
 # Data from Simvascular Simulation - Aorta and arteries
 #==============================================================================
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 
 x = np.linspace(0, 5, 50)
 y = np.linspace(0, 5, 50)
 z = np.linspace(0, 5, 50)
-xx, yy, zz = np.meshgrid(x, y, z,indexing = 'ij')
+xx, yy, zz = np.meshgrid(x, y, z, indexing = 'ij') #or is indexing = 'xy' ?
 vx = xx**3
 vy = yy**2
 vz = xx * 0
+#h = plt.contourf(x,y,vy)
 
 
 

@@ -13,6 +13,7 @@ import random
 from readDoses import *
 import time
 from dose_field_plot import *
+from readVelocities import *
 
 
 class Blood(object):
@@ -113,7 +114,7 @@ class Vector_field(object):
         self.vy_field = vy_field
         self.vz_field = vz_field
         self.v_square = self.get_v_square()        
-        (self.x_dim, self.y_dim, self.z_dim) = vx_field.shape
+        self.shape = vx_field.shape
         #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z  
         
     def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
@@ -221,7 +222,13 @@ class artery_v_field(Vector_field):
         
     def set_vz_field(self,vz_field):
         self.vz_field = vz_field
-        
+
+vx_field_artery, vy_field_artery, vz_field_artery = create_velocity_field('section2veldata.csv')
+print('size is ',vx_field_artery.size)
+print('shape is ', vx_field_artery.shape)
+print('nonzero values: ' , np.count_nonzero(vz_field_artery))
+artery = artery_v_field(vx_field_artery, vy_field_artery, vz_field_artery)
+print(artery.get_vx_field()[19][90][85])
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
                x_max=120,y_max=120,z_max=120):
@@ -620,10 +627,11 @@ def animate_blood():
     
 
 if __name__ == '__main__': 
-    start = time.time()
-    test_blood()
-    end = time.time()
-    print("Time to run: ", (end-start), "seconds")
+    pass
+#    start = time.time()
+#    test_blood()
+#    end = time.time()
+#    print("Time to run: ", (end-start), "seconds")
 
     
     

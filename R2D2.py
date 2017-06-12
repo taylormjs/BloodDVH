@@ -394,7 +394,7 @@ def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(1
     in_bloods - those still within defined vector field
     out_bloods - those that have left vector field
     vector_field - vector_field object
-    in_boundary - the boundary the blood is flowing into, a tuple (ylo, yhi) if axis == 'y'
+    in_boundary - the boundary the blood is flowing into, a list cotains x_low,x_high, y_low, y_high,.etc
     '''
 
     #Move all bloods within the field
@@ -533,18 +533,22 @@ def simulate_blood_flow(in_bloods,dose, vector_field, dt, blood_density= 1, \
 #    in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
     out_bloods = []
     plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
+    if dose.get_shape != (x_dim , y_dim ,z_dim):
+        print('the shape of dose_field does not match with the velocity fields')
+        #need a reshap function
+        dose.match_field((x_dim , y_dim ,z_dim))
     for i in range(len(times)):
-        #Add dose
+            #Add dose
         in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], \
-                                                    times[i], dt, in_boundary)
+                                                        times[i], dt, in_boundary)
         try:
-            #then circulate blood without dose
+                #then circulate blood without dose
             in_bloods = blood_flow_no_beam(in_bloods_after_dose, out_bloods, vector_field, time_gaps[i],\
-                                           dt,in_boundary)
+                                               dt,in_boundary)
         except IndexError: #because len(time_gaps) < len(times); 2 compared to 3, for ex.
             pass
-    #bloods still in vector fields and those that have left should be returned in the 
-    #same list
+        #bloods still in vector fields and those that have left should be returned in the 
+        #same list
     total_time = sum(times) + sum(time_gaps)
     num_out_per_time = len(out_bloods)/total_time
     print("# of bloods OUT of velocity field: " ,len(out_bloods)) 
@@ -672,7 +676,8 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
 def test_blood():
     '''run the blood simulation and plot various figures'''
     times = [t1,t2,t3]
-    dose_field = [np.random.rand(50,50,50),np.random.rand(50,50,50)]
+    
+    dose_field = [stack_field(f1,40),stack_field(f2,40),stack_field(f3,40)]
     time_gaps = [gap12,gap23]
     dt = 0.1
 #    vector_field = Const_vector_field(50,50,50,1,2,3)

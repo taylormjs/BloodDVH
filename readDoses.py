@@ -6,11 +6,12 @@ mat = scipy.io.loadmat('DOSEFIELDS.mat')
 f1 = np.array([mat['f1']]) #has dimenstion 1*75*100
 f2 = np.array([mat['f2']]) #has dimenstion 1*75*100
 f3 = np.array([mat['f3']]) #has dimenstion 1*75*100
-def stack_field(field,times=1):
+def stack_field(field,times=1,axis=0):
+    '''stack a field many times to make it thicker'''
     f1 = np.copy(field) 
     new_field = np.copy(field)
-    for i in range(times):
-       new_field = np.stack(new_field,f1)
+    for i in range(times-1):
+       new_field = np.concatenate((new_field,f1),axis)
     return new_field
         
 
@@ -41,6 +42,9 @@ class Dose(object):
         
     def get_dose_field(self):
         return self.dose_field  
+    
+    def get_shape(self):
+        return (self.x_dim, self.y_dim, self.z_dim)
     
     def get_dose_time(self):
         return self.time_on

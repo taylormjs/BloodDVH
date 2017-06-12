@@ -37,7 +37,9 @@ class Dose(object):
         self.dose_field = dose_field # a list of dose_field
         self.time_on = time_on
         self.time_gap = time_gap
+        #assume that all the dose_field have the same dimentions 
         (self.x_dim, self.y_dim, self.z_dim) = self.dose_field[0].shape
+
     
         
     def get_dose_field(self):
@@ -61,19 +63,38 @@ class Dose(object):
         self.time_gap += new_time_gap
         
     
-    def rotate(self, axis = 0):
-        '''rotate the dose field along x,y or z axis'''
-        pass
+#    def rotate(self, theta = math.pi/2 ,axis = [1,0,0]):
+#        """
+#        Return the rotation matrix associated with counterclockwise rotation about
+#        the given axis by theta radians.
+#        """
+#        axis = np.asarray(axis)
+#        axis = axis/math.sqrt(np.dot(axis, axis))
+#        a = math.cos(theta/2.0)
+#        b, c, d = -axis*math.sin(theta/2.0)
+#        aa, bb, cc, dd = a*a, b*b, c*c, d*d
+#        bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
+#        for i in 
+#        return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
+#                         [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+#                         [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
+#
+#v = [1, 0, 0]
+#axis = [0, 0, 1]
+#theta = math.pi/2
+#
+#print(np.dot(rotation_matrix(axis,theta), v)) 
     
-    def match_field(self, dimensions):
-        '''resize the dose_field to have required dimensions''' 
-        if (self.x_dim, self.y_dim, self.z_dim) != dimensions:
-            new_dose_field = []
-            for i in self.dose_field: 
-                new_field = np.zeros(dimensions)
-                new_field[0:self.x_dim, 0:self.y_dim, 0:self.z_dim] = i
-                new_dose_field.append(new_field)                
-            self.dose_field = new_dose_field
+def match_field(field, dimensions):
+    '''resize the dose_field to have required dimensions''' 
+    if field.shape != dimensions:
+        new_field = np.zeros(dimensions)
+        x_dim,y_dim,z_dim = field.shape
+        new_field[0:x_dim, 0:y_dim, 0:z_dim] = field
+    else:
+        new_field = field
+    
+    return new_field
         
         
         

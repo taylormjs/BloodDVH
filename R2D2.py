@@ -533,12 +533,12 @@ def simulate_blood_flow(in_bloods,dose, vector_field, dt, blood_density= 1, \
 #    in_bloods = make_blood(num_bloods,x_max =x_dim,y_max=y_dim,z_max=z_dim)
     out_bloods = []
     plot_bloods_3d(in_bloods, c = 'r', m = '^')# initial position of the bloods 
-    if dose.get_shape != (x_dim , y_dim ,z_dim):
-        print('the shape of dose_field does not match with the velocity fields')
-        #need a reshap function
-        dose.match_field((x_dim , y_dim ,z_dim))
     for i in range(len(times)):
             #Add dose
+        if (dose_fields[i].shape) != (x_dim , y_dim ,z_dim):
+            print('the shape of dose_field does not match with the velocity fields')
+        #need a reshap function
+            dose_fields[i] = match_field(dose_fields[i],(x_dim , y_dim ,z_dim))
         in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], \
                                                         times[i], dt, in_boundary)
         try:

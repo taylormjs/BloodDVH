@@ -14,8 +14,20 @@ Created on Tue Jun  6 11:09:47 2017
 #==============================================================================
 # Data from Simvascular Simulation - Aorta and arteries
 #==============================================================================
-from R2D2 import Position
 import numpy as np
+
+
+
+x = np.linspace(0, 5, 50)
+y = np.linspace(0, 5, 50)
+z = np.linspace(0, 5, 50)
+xx, yy, zz = np.meshgrid(x, y, z,indexing = 'ij')
+vx = xx**3
+vy = yy**2
+vz = xx * 0
+
+
+
 
 
 def make_into_cell(x):
@@ -39,8 +51,8 @@ def create_velocity_field(filename):
             entry = line.split(',')
             #pull and labels just the values we want - this may need to be changed
             #if more files are added
-            x,y,z,vx,vy, vz = tuple(map(make_into_cell,[entry[1],entry[2],entry[3],\
-                                                        entry[4], entry[5], entry[6]]))
+            x,y,z = tuple(map(make_into_cell,[entry[2],entry[3],entry[4]]))
+            vx,vy,vz = tuple(map(float, [entry[6], entry[7], entry[8]]))
             velx.append(vx)
             vely.append(vy)
             velz.append(vz)
@@ -58,10 +70,19 @@ def create_velocity_field(filename):
         vx_field = np.zeros((x_dim+1, y_dim+1, z_dim+1)) #add 1 to avoid index errors
         vy_field = np.zeros((x_dim+1, y_dim+1, z_dim+1))
         vz_field = np.zeros((x_dim+1, y_dim+1, z_dim+1))
-        #modify entires of x_pos, y_pos, ans z_pos to start at 0 (rather than a negative #)
-        x_pos = np.array(x_pos) + abs(x_min)
-        y_pos = np.array(y_pos) + abs(y_min)
-        z_pos = np.array(z_pos) + abs(z_min)
+        #modify entries of x_pos, y_pos, and z_pos to start at 0 (rather than a negative #)
+        if x_min < 0:
+            x_pos = np.array(x_pos) + abs(x_min)
+        else:
+            x_pos = np.array(x_pos) - x_min
+        if y_min < 0:
+            y_pos = np.array(y_pos) + abs(y_min)
+        else:
+            y_pos = np.array(y_pos) - y_min
+        if z_min < 0:
+            z_pos = np.array(z_pos) + abs(z_min)
+        else:
+            z_pos = np.array(z_pos) - z_min
         #Add all velocities to 3D matrices - vx, vy, and vz matrices
         for i in range(len(x_pos)):
             x, y, z = x_pos[i], y_pos[i], z_pos[i]
@@ -69,13 +90,15 @@ def create_velocity_field(filename):
             vx_field[x][y][z] = vx
             vy_field[x][y][z] = vy            
             vz_field[x][y][z] = vz
-                    
     return (vx_field,vy_field,vz_field)
 
-        
-                
-            
-vx_field_artery, vy_field_artery, vz_field_artery = create_velocity_field('veldata.csv')
+
+create_velocity_field('section2veldata.csv')
+
+vx_field_artery, vy_field_artery, vz_field_artery = create_velocity_field('section2veldata.csv')
+print(np.count_nonzero(vz_field_artery))
+
+
 
         
 

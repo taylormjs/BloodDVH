@@ -419,7 +419,7 @@ def gen_new_blood_3d(out_blood_per_t,vector_field, in_boundary,direction='z'):
     
     
     
-def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(10,60),(0,20)], direction = 'z'):
+def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(10,40),(0,20)], direction = 'z'):
     '''Updates the positions of all the bloods still within the vector field
     in one time step with length dt (a float)
     in_bloods - those still within defined vector field
@@ -736,15 +736,15 @@ if __name__ == '__main__':
 
     
 
-##   start time
-#    start = time.time()
-##    for n in [1]:
-##        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-#    vector_field = Const_vector_field(120,120,120,1,2,3)
-#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
-#    #stop time
-#    end = time.time()
-#    print("Time to run: ", (end-start), "seconds")
+#   start time
+    start = time.time()
+#    for n in [1]:
+#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
+    vector_field = artery_v_field(vx,vy,vz)
+    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(10,20),(10,20)],direction ='x')    
+    #stop time
+    end = time.time()
+    print("Time to run: ", (end-start), "seconds")
 
 
     

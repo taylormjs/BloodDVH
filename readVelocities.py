@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 
 
 #==============================================================================
-# A
+# Create velocity fields here: Take these in as parameters for each vector_field
+# object made
 #==============================================================================
 x = np.linspace(0, 5, 50)
 y = np.linspace(0, 5, 50)

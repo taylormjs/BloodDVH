@@ -115,6 +115,7 @@ class Vector_field(object):
         self.vz_field = vz_field
         self.v_square = self.get_v_square()        
         self.shape = vx_field.shape
+        (self.x_dim, self.y_dim, self.z_dim) = self.shape
         #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z  
         
     def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
@@ -710,9 +711,11 @@ def test_blood():
     
     dose_field = [stack_field(f1,40),stack_field(f2,40),stack_field(f3,40)]
     time_gaps = [gap12,gap23]
-    dt = 0.1
+    dt = 0.01
 #    vector_field = Const_vector_field(50,50,50,1,2,3)
-    vector_field,bloods = generate_vector_field((50,75,100))
+#    vector_field,bloods = generate_vector_field((50,75,100))
+    vector_field = Vector_field(vx,vy,vz)
+    bloods = make_blood(100, x_max = 50, y_max = 50, z_max = 50)
     blood_density = 1
     dose = Dose(dose_field,times,time_gaps)
     bloods = simulate_blood_flow(bloods,dose, vector_field, dt, blood_density, \
@@ -729,7 +732,7 @@ def animate_blood():
 if __name__ == '__main__': 
     pass
 #    start = time.time()
-#    test_blood()
+    test_blood()
 #    end = time.time()
 #    print("Time to run: ", (end-start), "seconds")
 
@@ -740,8 +743,8 @@ if __name__ == '__main__':
     start = time.time()
 #    for n in [1]:
 #        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-    vector_field = artery_v_field(vx,vy,vz)
-    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(10,20),(10,20)],direction ='x')    
+    vector_field = Vector_field(vx,vy,vz)
+#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(10,20),(10,20)],direction ='z')    
     #stop time
     end = time.time()
     print("Time to run: ", (end-start), "seconds")

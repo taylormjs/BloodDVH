@@ -13,6 +13,7 @@ import random
 from readDoses import *
 import time
 from dose_field_plot import *
+from readVelocities import *
 
 
 class Blood(object):
@@ -87,6 +88,14 @@ class Position(object):
         new_x, new_y, new_z = (old_x + dx), (old_y + dy), (old_z + dz)
         return Position (new_x, new_y, new_z)
     
+    def set_velocity(self, velocity):
+        '''Useful for reading in velocity files
+        '''
+        self.velocity = velocity
+        
+    def get_velocity(self):
+        return self.velocity
+    
     def __str__(self):
         return "Position: " + str((self.x, self.y, self.z))
         #'(' + str(self.x) + str(self.y) + str(self.z) + ')'
@@ -105,7 +114,7 @@ class Vector_field(object):
         self.vy_field = vy_field
         self.vz_field = vz_field
         self.v_square = self.get_v_square()        
-        (self.x_dim, self.y_dim, self.z_dim) = vx_field.shape
+        self.shape = vx_field.shape
         #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z  
         
     def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
@@ -206,6 +215,7 @@ class Vector_field(object):
             return "Vector_field w/ dim: " + str((self.x_dim, self.y_dim, \
                                                          self.z_dim))
 
+        
 class Const_vector_field(Vector_field):
         '''Each position has an associated velocity in x,y, and z directions as 
             well as an associated dose'''
@@ -216,14 +226,35 @@ class Const_vector_field(Vector_field):
             #TODO - Adjust this later to match up with the velocity fields  in vdx files 
             ''' 
             self.vx, self.vy, self.vz = vx, vy, vz
+            self.velocity = (self.vx, self.vy, self.vz)
             velocity = (self.vx, self.vy, self.vz)
             vx_field = np.zeros((x_dim,y_dim, z_dim)) + self.vx   
             vy_field = np.zeros((x_dim,y_dim, z_dim)) + self.vy  
             vz_field = np.zeros((x_dim,y_dim, z_dim)) + self.vz  
             Vector_field.__init__(self,vx_field, vy_field, vz_field)
-  
-            
+ 
+
+class artery_v_field(Vector_field):
+    '''a velocity vector field inside of an artery
+    '''
+    def __init__(self, vx_field,vy_field,vz_field):       
+        Vector_field.__init__(self,vx_field,vy_field,vz_field)  
+
+    def set_vx_field(self,vx_field):
+        self.vx_field = vx_field
         
+    def set_vy_field(self,vy_field):
+        self.vy_field = vy_field
+        
+    def set_vz_field(self,vz_field):
+        self.vz_field = vz_field
+
+vx_field_artery, vy_field_artery, vz_field_artery = create_velocity_field('section2veldata.csv')
+print('size is ',vx_field_artery.size)
+print('shape is ', vx_field_artery.shape)
+print('nonzero values: ' , np.count_nonzero(vz_field_artery))
+artery = artery_v_field(vx_field_artery, vy_field_artery, vz_field_artery)
+print(artery.get_vx_field()[19][90][85])
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
                x_max=120,y_max=120,z_max=120):
@@ -388,7 +419,7 @@ def gen_new_blood_3d(out_blood_per_t,vector_field, in_boundary,direction='z'):
     
     
     
-def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(10,60),(0,20)], direction = 'z'):
+def bloods_flow(in_bloods, out_bloods, vector_field,dt, in_boundary = [(0,20),(10,40),(0,20)], direction = 'z'):
     '''Updates the positions of all the bloods still within the vector field
     in one time step with length dt (a float)
     in_bloods - those still within defined vector field
@@ -696,23 +727,24 @@ def animate_blood():
     
 
 if __name__ == '__main__': 
-    start = time.time()
-    test_blood()
-    end = time.time()
-    print("Time to run: ", (end-start), "seconds")
+    pass
+#    start = time.time()
+#    test_blood()
+#    end = time.time()
+#    print("Time to run: ", (end-start), "seconds")
 
 
     
 
-##   start time
-#    start = time.time()
-##    for n in [1]:
-##        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-#    vector_field = Const_vector_field(120,120,120,1,2,3)
-#    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(30,60),(70,100)],direction ='z')    
-#    #stop time
-#    end = time.time()
-#    print("Time to run: ", (end-start), "seconds")
+#   start time
+    start = time.time()
+#    for n in [1]:
+#        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
+    vector_field = artery_v_field(vx,vy,vz)
+    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(10,20),(10,20)],direction ='x')    
+    #stop time
+    end = time.time()
+    print("Time to run: ", (end-start), "seconds")
 
 
     

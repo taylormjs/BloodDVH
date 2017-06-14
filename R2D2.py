@@ -475,14 +475,14 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
 #    vector_field = Vector_field(vx_field,vy_field,vz_field)
 #    return (vector_field,bloods)
 
-def generate_vector_field(dim):
+def generate_vector_field(dim, initial_p =(10,10,0) ):
     '''generate a vector field to simulate a real blood flow'''
     x_dim, y_dim, z_dim = dim
     vx_field = np.zeros(dim)
     vy_field = np.zeros(dim)
     vz_field = np.zeros(dim)
-    (x,y,z) = (10,10,0)
-    (vx,vy,vz) = (0.1,0.5,1.0)
+    (x,y,z) = initial_p
+    (vx,vy,vz) = (0.1,0.5,1.0)# maximum equal to 1
     bloods = []
     while (x < x_dim) & (y < y_dim) & (z <z_dim):
         vx_field[int(x)-2:int(x)+2,int(y)-2:int(y)+2,int(z)].fill(vx)

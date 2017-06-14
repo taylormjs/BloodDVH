@@ -506,14 +506,14 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field, \
 #    vector_field = Vector_field(vx_field,vy_field,vz_field)
 #    return (vector_field,bloods)
 
-def generate_vector_field(dim):
+def generate_vector_field(dim, initial_p =(10,10,0) ):
     '''generate a vector field to simulate a real blood flow'''
     x_dim, y_dim, z_dim = dim
     vx_field = np.zeros(dim)
     vy_field = np.zeros(dim)
     vz_field = np.zeros(dim)
-    (x,y,z) = (10,10,0)
-    (vx,vy,vz) = (0.1,0.2,1.0)
+    (x,y,z) = initial_p
+    (vx,vy,vz) = (0.1,0.5,1.0)# maximum equal to 1
     bloods = []
     while (x < x_dim) & (y < y_dim) & (z <z_dim):
         vx_field[int(x)-2:int(x)+2,int(y)-2:int(y)+2,int(z)].fill(vx)
@@ -568,7 +568,7 @@ def simulate_blood_flow(in_bloods,dose, vector_field, dt, blood_density= 1, \
             #Add dose
         if (dose_fields[i].shape) != (x_dim , y_dim ,z_dim):
             print('the shape of dose_field does not match with the velocity fields')
-        #need a reshap function
+            #reshape the field if the dose field and the velocity field do not match
             dose_fields[i] = match_field(dose_fields[i],(x_dim , y_dim ,z_dim))
         in_bloods_after_dose = blood_flow_with_beam(in_bloods, out_bloods, vector_field, dose_fields[i], \
                                                         times[i], dt, in_boundary)

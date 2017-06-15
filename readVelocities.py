@@ -19,15 +19,16 @@ import matplotlib.pyplot as plt
 
 
 #==============================================================================
-# A
+# Create velocity fields here: Take these in as parameters for each vector_field
+# object made
 #==============================================================================
 x = np.linspace(0, 5, 50)
-y = np.linspace(0, 5, 50)
-z = np.linspace(0, 5, 50)
+y = np.linspace(0, 5, 75)
+z = np.linspace(0, 5, 100)
 xx, yy, zz = np.meshgrid(x, y, z, indexing = 'ij') #or is indexing = 'xy' ?
-vx = xx**3
+vx = xx*0
 vy = yy**2
-vz = xx * 0
+vz = zz
 #h = plt.contourf(x,y,vy)
 
 

@@ -13,7 +13,7 @@ import random
 from readDoses import *
 import time
 from dose_field_plot import *
-from readVelocities import *
+#from readVelocities import *
 
 
 class Blood(object):
@@ -707,15 +707,15 @@ def test_plot_positions(num_bloods, vector_field, time, dt,\
             
 def test_blood():
     '''run the blood simulation and plot various figures'''
-    times = [t1,t2,t3]
+    times = [1]
     
-    dose_field = [stack_field(f1,40),stack_field(f2,40),stack_field(f3,40)]
-    time_gaps = [gap12,gap23]
-    dt = 0.01
+    dose_field = [dr]
+    time_gaps = [1]
+    dt = 0.1
 #    vector_field = Const_vector_field(50,50,50,1,2,3)
 #    vector_field,bloods = generate_vector_field((50,75,100))
     vector_field = Vector_field(vx,vy,vz)
-    bloods = make_blood(100, x_max = 50, y_max = 50, z_max = 50)
+    bloods = make_blood(10, x_max = 512, y_max = 512, z_max = 168)
     blood_density = 1
     dose = Dose(dose_field,times,time_gaps)
     bloods = simulate_blood_flow(bloods,dose, vector_field, dt, blood_density, \

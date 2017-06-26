@@ -194,6 +194,16 @@ class Vector_field(object):
     
     def get_size(self):
         return self.vx_field.size
+
+    def get_surface_index(self):
+        s1 = [0,:,:]  # the surface where x = 0
+        s2 = [-1,:,:]  # x = -1
+        s3 = [:, 0,:]  # y = 0
+        s4 = [:, -1,:]  # y = -1
+        s5 = [:,:, 0]  # z = 0
+        s6 = [:,:-1]  # z = -1
+        return
+
                
     def is_position_in_dose_field(self, position):
         '''Returns true if the input position is within the dose_field
@@ -250,12 +260,6 @@ class artery_v_field(Vector_field):
     def set_vz_field(self,vz_field):
         self.vz_field = vz_field
 
-vx_field_artery, vy_field_artery, vz_field_artery = create_velocity_field('section2veldata.csv')
-print('size is ',vx_field_artery.size)
-print('shape is ', vx_field_artery.shape)
-print('nonzero values: ' , np.count_nonzero(vz_field_artery))
-artery = artery_v_field(vx_field_artery, vy_field_artery, vz_field_artery)
-print(artery.get_vx_field()[19][90][85])
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
                x_max=120,y_max=120,z_max=120):
@@ -271,6 +275,20 @@ def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
         bloods += [blood]
         
     return bloods
+#TODO modify this so it can run on the new velocity field
+#def make_blood(,blood_density=1):
+#    '''makes num_blood_cells objects and gives them all an initial position
+#    '''
+#    bloods =[]
+#    x = np.random.uniform(x_min,x_max,num_blood_cells)#changed from randit to uniform
+#    y = np.random.uniform(y_min,y_max,num_blood_cells)
+#    z = np.random.uniform(z_min,z_max,num_blood_cells)
+#    for i in range(num_blood_cells):
+#        position = Position(x[i],y[i],z[i])
+#        blood = Blood(position)
+#        bloods += [blood]
+#        
+#    return bloods
 
   
   
@@ -299,8 +317,7 @@ def gen_new_blood(out_blood_per_t,vector_field, in_boundary, axis):
     axis (str) - can be either 'y' or 'z', defining the axis along which the
     blood cells will be added (ie - if the blood flows in, crossing the z axis,
     axis = 'z')
-    '''    
-    #TODO - if this is taking too long later, separate into two functions
+    '''
     
     #Initiliaze num_bloods, boundary limits, and fields
     #num_bloods = len(out_bloods)
@@ -371,7 +388,7 @@ def gen_new_blood_3d(out_blood_per_t,vector_field, in_boundary,direction='z'):
     if direction == 'z':
         mini_field = v_square[x_lo:x_hi+1,y_lo:y_hi+1, 0]   
         total = mini_field.sum()
-        prob_field =  mini_field / total
+        prob_field = mini_field / total
     #generate a 1D list of number_bloods leaving using np.random.choice()
     #with probabilities defined, this will be the positions of the new blood
     #units
@@ -389,7 +406,7 @@ def gen_new_blood_3d(out_blood_per_t,vector_field, in_boundary,direction='z'):
     elif direction == 'y':
         mini_field = v_square[x_lo:x_hi+1 ,0, z_lo:z_hi+1]   
         total = mini_field.sum()
-        prob_field =  mini_field / total
+        prob_field = mini_field / total
         choose_ind = np.random.choice(prob_field.size,out_blood_per_t, \
                                       p = prob_field.flatten())                         
 

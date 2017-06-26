@@ -10,10 +10,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 import math
 import random
-from readDoses import *
+#from readDoses import *
 import time
 from dose_field_plot import *
-from readVelocities import *
+#from readVelocities import *
 
 
 class Blood(object):
@@ -115,7 +115,10 @@ class Vector_field(object):
         self.vz_field = vz_field
         self.v_square = self.get_v_square()        
         self.shape = vx_field.shape
-        (self.x_dim, self.y_dim, self.z_dim) = self.shape
+        if len(self.shape) == 2:
+            self.x_dim,self.y_dim = self.shape
+        else:
+            self.x_dim, self.y_dim, self.z_dim = self.shape
         #create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z  
         
     def set_dose_matrix(self, dose_matrix): #maybe take out the dim parameters later
@@ -235,7 +238,7 @@ class Const_vector_field(Vector_field):
             Vector_field.__init__(self,vx_field, vy_field, vz_field)
  
 
-class artery_v_field(Vector_field):
+class velocity_field(Vector_field):
     '''a velocity vector field inside of an artery
     '''
     def __init__(self, vx_field,vy_field,vz_field):       
@@ -250,12 +253,11 @@ class artery_v_field(Vector_field):
     def set_vz_field(self,vz_field):
         self.vz_field = vz_field
 
-vx_field_artery, vy_field_artery, vz_field_artery = create_velocity_field('section2veldata.csv')
-print('size is ',vx_field_artery.size)
-print('shape is ', vx_field_artery.shape)
-print('nonzero values: ' , np.count_nonzero(vz_field_artery))
-artery = artery_v_field(vx_field_artery, vy_field_artery, vz_field_artery)
-print(artery.get_vx_field()[19][90][85])
+start = time.time()
+aorta = velocity_field(aorta_vx_field, aorta_vy_field, aorta_vz_field)
+end = time.time()
+print("time to make aorta: ", end-start, " seconds")
+
 
 def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
                x_max=120,y_max=120,z_max=120):
@@ -272,7 +274,37 @@ def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
         
     return bloods
 
-  
+def create_blood(velocity_field, blood_density = 1):
+    '''Takes in a velocity_field object and the blood density
+    Creates blood objects within each of the cells that has a nonzero velocity
+    '''
+    bloods =[]
+    #v_sum is a composition of all vector fields to make sure blood is added to 
+    #every voxel with nonzero elements
+    v_sum = velocity_field.get_vx_field() + velocity_field.get_vy_field() + velocity_field.get_vz_field()
+    #iterate through every voxel within matrix
+    v_iterator = np.nditer(v_sum,flags=['multi_index'])
+    for voxel in v_iterator:
+        if voxel != 0:
+            x,y,z = v_iterator.multi_index
+            position = Position(x,y,z)
+            blood = Blood(position)
+            bloods.append(blood)
+    return bloods
+#    while not v_iterator.finished:
+#        index = v_iterator.multi_index
+#        if v_sum[index[0]][index[1]][index[2]] != 0:
+#            position = Position(index)
+#            blood = Blood(position)
+#            bloods += [blood]        
+#    return bloods
+ 
+
+
+start_create = time.time()
+bloods = create_blood(aorta)
+end_create = time.time()
+print("time to create blood: ", end_create-start_create, "seconds")
   
 def add_dose_for_allblood(all_bloods,dose_matrix, vector_field,dt):
     '''
@@ -732,7 +764,7 @@ def animate_blood():
 if __name__ == '__main__': 
     pass
 #    start = time.time()
-    test_blood()
+#    test_blood()
 #    end = time.time()
 #    print("Time to run: ", (end-start), "seconds")
 
@@ -743,7 +775,7 @@ if __name__ == '__main__':
     start = time.time()
 #    for n in [1]:
 #        plot_dvh(doses, time_on, time_off, .1, blood_d = n) #time_on and time_off found in readDoses.py
-    vector_field = Vector_field(vx,vy,vz)
+#    vector_field = Vector_field(vx,vy,vz)
 #    test_plot_positions(100,vector_field, 20, .1,in_boundary = [(0,10),(10,20),(10,20)],direction ='z')    
     #stop time
     end = time.time()

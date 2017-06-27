@@ -1,5 +1,27 @@
 import scipy.io
 import numpy as np 
+<<<<<<< HEAD
+=======
+import time
+
+#TODO - figure out how to get these files to load quicker
+#Note - each matrix imported is 512x512x168 = 44040192 cells!
+filestart = time.time()
+mat = scipy.io.loadmat('DOSEFIELDS.mat')
+blood_vel = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')
+blood_dose = scipy.io.loadmat('Blood3dLiver/DOSESbloodflow.mat')
+fileend = time.time()
+print("time to take in files ",fileend-filestart, "seconds")
+
+#Matrices representing the velocities and doses of a 512x512x168 vector
+astart = time.time()
+aorta_vx_field = np.array(blood_vel['u'])
+aorta_vy_field = np.array(blood_vel['v'])
+aorta_vz_field = np.array(blood_vel['w'])
+aorta_dose = np.array(blood_dose['dr'])
+aend = time.time()
+print("time to make fields: ",aend-astart, " seconds")
+>>>>>>> 8d8072f67e9d130f770ccaa7a42f10032e58e5a4
 
 #Old Dose matrix used for test 
 

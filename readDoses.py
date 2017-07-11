@@ -1,5 +1,7 @@
 import scipy.io
 import numpy as np 
+<<<<<<< HEAD
+=======
 import time
 
 #TODO - figure out how to get these files to load quicker
@@ -19,11 +21,30 @@ aorta_vz_field = np.array(blood_vel['w'])
 aorta_dose = np.array(blood_dose['dr'])
 aend = time.time()
 print("time to make fields: ",aend-astart, " seconds")
+>>>>>>> 8d8072f67e9d130f770ccaa7a42f10032e58e5a4
 
+#Old Dose matrix used for test 
 
-f1 = np.array([mat['f1']]) #has dimenstion 1*75*100
-f2 = np.array([mat['f2']]) #has dimenstion 1*75*100
-f3 = np.array([mat['f3']]) #has dimenstion 1*75*100
+#mat = scipy.io.loadmat('DOSEFIELDS.mat')
+#
+
+#f1 = np.array([mat['f1']]) #has dimenstion 1*75*100
+#f2 = np.array([mat['f2']]) #has dimenstion 1*75*100
+#f3 = np.array([mat['f3']]) #has dimenstion 1*75*100        
+#t1 = mat['t1'][0][0]
+#t2 = mat['t2'][0][0]
+#t3 = mat['t3'][0][0]
+#gap12 = mat['gap12'][0][0]
+#gap23 = mat['gap23'][0][0]
+#total_time = t1 + t2 +t3 + gap12 + gap23
+#
+#time_on = [t1,t2,t3]
+#time_off = [gap12,gap23]
+#
+#doses = [f1,f2,f3]
+
+#creat a class for Dose
+#----------------------------------------------------------------------------
 def stack_field(field,times=1,axis=0):
     '''stack a field many times to make it thicker'''
     f1 = np.copy(field) 
@@ -32,21 +53,13 @@ def stack_field(field,times=1,axis=0):
        new_field = np.concatenate((new_field,f1),axis)
     return new_field
         
+mat_v = scipy.io.loadmat('VELOCITYVECSbloodflow.mat')#read velocity field from mat file
+vx = np.array(mat_v['u'])
+vy = np.array(mat_v['v'])
+vz = np.array(mat_v['w']) 
 
-        
-t1 = mat['t1'][0][0]
-t2 = mat['t2'][0][0]
-t3 = mat['t3'][0][0]
-gap12 = mat['gap12'][0][0]
-gap23 = mat['gap23'][0][0]
-total_time = t1 + t2 +t3 + gap12 + gap23
-
-time_on = [t1,t2,t3]
-time_off = [gap12,gap23]
-
-doses = [f1,f2,f3]
-
-#creat a class for Dose
+mat_d = scipy.io.loadmat('DOSESbloodflow.mat')#read dose field
+dr = np.array(mat_d['dr'])
 
 class Dose(object):
     ''' A Blood voxel with an position and dose

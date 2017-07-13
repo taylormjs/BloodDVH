@@ -175,13 +175,12 @@ class VectorFields(object):
         return "Vector_field w/ dim: " + str((self.x_dim, self.y_dim, \
                                               self.z_dim))
 
-class Const_vector_field(Vector_field):
+class Const_vector_field(VectorFields):
     '''Each position has an associated velocity in x,y, and z directions as
         well as an associated dose'''
-
     # NOTE - vy dose not have a default value of 0 in 2d version
     def __init__(self, x_dim, y_dim, z_dim, vx, vy, vz):  # change the order of these later
-         '''Assumes x_dim is a scalar of the number of units in our matrix
+        '''Assumes x_dim is a scalar of the number of units in our matrix
         In one dimension, y_dim and z_dim should just be 1
         #TODO - Adjust this later to match up with the velocity fields  in vdx files
         '''

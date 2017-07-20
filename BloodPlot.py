@@ -1,3 +1,6 @@
+import numpy as np
+from matplotlib import pyplot as plt
+
 def make_pdf(bloods):
     '''make a probability density function which will graph blood dose vs.
     volume of blood (which will be fraction of total blood for 1D)
@@ -41,3 +44,16 @@ def make_dvh(bloods):
     bin_centers = (bins[1:]+bins[:-1])*0.5
     dvh = np.cumsum(hist)
     return (bin_centers,dvh)
+
+
+def plot_dvh(bloods, blood_density=1):
+    bin_centers, dvh = make_dvh(bloods)
+    plt.figure()
+    num_bloods = len(bloods)
+    plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
+              "\nBlood Density: " + str(blood_density))
+    plt.xlabel("Dose (Gray)")
+    plt.ylabel("Volume (%)")
+    plt.ylim(0, 100)
+    plt.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, c='green')
+    plt.grid(True)

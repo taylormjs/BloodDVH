@@ -1,3 +1,5 @@
+import numpy as np
+
 class VectorFields(object):
     '''TODO  - make this the superclass of const_vector_field. Make another
     subclass of vector_field called varying_field(?)
@@ -98,7 +100,7 @@ class VectorFields(object):
     def find_gen_field(self):
         '''this method is used to decided where to generate new blood as one leave the field
         '''
-        v_square = vector_field.v_square
+        v_square = self.get_v_square()
         surface1 = self.get_vx_field()[0, :, :]  # the surface where x = 0
         surface2 = self.get_vx_field()[-1, :, :]  # x = -1
         surface3 = self.get_vy_field()[:, 0, :]  # y = 0
@@ -106,7 +108,7 @@ class VectorFields(object):
         surface5 = self.get_vz_field()[:, :, 0]  # z = 0
         surface6 = self.get_vz_field()[:, :-1]  # z = -1
         list_of_index = []
-        mini_field = []
+        mini_field =[]
         v_iterator1 = np.nditer(surface1, flags=['multi_index'])
         v_iterator2 = np.nditer(surface2, flags=['multi_index'])
         v_iterator3 = np.nditer(surface3, flags=['multi_index'])
@@ -115,42 +117,47 @@ class VectorFields(object):
         v_iterator6 = np.nditer(surface6, flags=['multi_index'])
         for voxel in v_iterator1:
             if voxel > 0:
-                (x, y, z) = v_iterator1.multi_index
+                x = 0
+                ( y, z) = v_iterator1.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator2:
             if voxel < 0:
-                (x, y, z) = v_iterator2.multi_index
+                x = -1
+                (y, z) = v_iterator2.multi_index
                 list_of_index.append((x, y, z))
-                mini_field.append([v_squarex, y, z])
+                mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator3:
             if voxel > 0:
-                (x, y, z) = v_iterator3.multi_index
+                y = 0
+                (x, z) = v_iterator3.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator4:
             if voxel < 0:
-                (x, y, z) = v_iterator4.multi_index
+                y = -1
+                (x, z) = v_iterator4.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator5:
             if voxel > 0:
-                (x, y, z) = v_iterator5.multi_index
+                z = 0
+                (x, y) = v_iterator5.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator6:
             if voxel < 0:
-                (x, y, z) = v_iterator6.multi_index
+                z = -1
+                (x, y) = v_iterator6.multi_index
                 list_of_index.append((x, y, z))
-                mini_field.append([x, y, z])
-
-        total = mini_field.sum()
-        prob_field = mini_field / total  # need to check if the number are too small
+                mini_field.append(v_square[x, y, z])
+        total = sum(mini_field)
+        prob_field = [i/total for i in mini_field]  # need to check if the number are too small
 
         return (list_of_index, prob_field)
 
@@ -190,4 +197,4 @@ class Const_vector_field(VectorFields):
         vx_field = np.zeros((x_dim, y_dim, z_dim)) + self.vx
         vy_field = np.zeros((x_dim, y_dim, z_dim)) + self.vy
         vz_field = np.zeros((x_dim, y_dim, z_dim)) + self.vz
-        Vector_field.__init__(self, vx_field, vy_field, vz_field)
+        VectorFields.__init__(self, vx_field, vy_field, vz_field)

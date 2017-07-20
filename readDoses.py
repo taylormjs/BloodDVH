@@ -1,27 +1,25 @@
 import scipy.io
-import numpy as np 
-<<<<<<< HEAD
-=======
+import numpy as np
 import time
 
 #TODO - figure out how to get these files to load quicker
 #Note - each matrix imported is 512x512x168 = 44040192 cells!
-filestart = time.time()
-mat = scipy.io.loadmat('DOSEFIELDS.mat')
-blood_vel = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')
-blood_dose = scipy.io.loadmat('Blood3dLiver/DOSESbloodflow.mat')
-fileend = time.time()
-print("time to take in files ",fileend-filestart, "seconds")
+# filestart = time.time()
+# mat = scipy.io.loadmat('DOSEFIELDS.mat')
+# blood_vel = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')
+# blood_dose = scipy.io.loadmat('Blood3dLiver/DOSESbloodflow.mat')
+# fileend = time.time()
+# print("time to take in files ",fileend-filestart, "seconds")
 
 #Matrices representing the velocities and doses of a 512x512x168 vector
-astart = time.time()
-aorta_vx_field = np.array(blood_vel['u'])
-aorta_vy_field = np.array(blood_vel['v'])
-aorta_vz_field = np.array(blood_vel['w'])
-aorta_dose = np.array(blood_dose['dr'])
-aend = time.time()
-print("time to make fields: ",aend-astart, " seconds")
->>>>>>> 8d8072f67e9d130f770ccaa7a42f10032e58e5a4
+# astart = time.time()
+# aorta_vx_field = np.array(blood_vel['u'])
+# aorta_vy_field = np.array(blood_vel['v'])
+# aorta_vz_field = np.array(blood_vel['w'])
+# aorta_dose = np.array(blood_dose['dr'])
+# aend = time.time()
+# print("time to make fields: ",aend-astart, " seconds")
+
 
 #Old Dose matrix used for test 
 
@@ -53,13 +51,15 @@ def stack_field(field,times=1,axis=0):
        new_field = np.concatenate((new_field,f1),axis)
     return new_field
         
-mat_v = scipy.io.loadmat('VELOCITYVECSbloodflow.mat')#read velocity field from mat file
+mat_v = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')#read velocity field from mat file
 vx = np.array(mat_v['u'])
 vy = np.array(mat_v['v'])
-vz = np.array(mat_v['w']) 
+vz = np.array(mat_v['w'])
 
-mat_d = scipy.io.loadmat('DOSESbloodflow.mat')#read dose field
-dr = np.array(mat_d['dr'])
+
+
+# mat_d = scipy.io.loadmat('Blood3dLiverDOSESbloodflow.mat')#read dose field
+# dr = np.array(mat_d['dr'])
 
 class Dose(object):
     ''' A Blood voxel with an position and dose

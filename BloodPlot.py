@@ -57,3 +57,4 @@ def plot_dvh(bloods, blood_density=1):
     plt.ylim(0, 100)
     plt.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, c='green')
     plt.grid(True)
+    plt.show()

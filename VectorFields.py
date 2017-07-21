@@ -171,9 +171,46 @@ class VectorFields(object):
         return (0 <= x < self.x_dim and 0 <= y < self.y_dim and 0 <= z < self.z_dim)
         # less than or equal to? <=
 
+    def findNoneZeros(self):
+        (x_list,y_list,z_list) = np.nonzero(self.v_square != 0)
+        x_min = x_list[0]
+        y_min = y_list[0]
+        z_min = z_list[0]
+        x_max = x_list[-1]
+        y_max = y_list[-1]
+        z_max = z_list[-1]
+        return [(x_min,x_max),(y_min,y_max),(z_min,z_max)]
+
+    # def findNoneZeros(self):
+        # x_min = 0
+        # y_min = 0
+        # z_min = 0
+        # for i in range(self.x_dim):
+        #     for j in range(self.y_dim):
+        #         for k in range(self.z_dim):
+        #             if self.v_square[i,j,k] != 0:
+        #                 x_min = i
+        #                 y_min = j
+        #                 z_min = k
+        #                 break
+        # for i in range(self.x_dim, -1, -1)
+        #     for j in range(self.y_dim,-1,-1):
+        #         for j in range(self.y_dim):
+        #             for k in range(self.z_dim):
+        #                 if self.v_square[i, j, k] != 0:
+        #                     x_max = i
+        #                     y_max = j
+        #                     z_max = k
+        #                     break
+        # return (x_min,y_min,z_min)
+
+
+
     def __str__(self):
         return "Vector_field w/ dim: " + str((self.x_dim, self.y_dim, \
                                               self.z_dim))
+
+
 
 class Const_vector_field(VectorFields):
     '''Each position has an associated velocity in x,y, and z directions as

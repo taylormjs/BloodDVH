@@ -218,7 +218,7 @@ class Vector_field(object):
             if voxel < 0:
                 (x, y, z) = v_iterator2.multi_index
                 list_of_index.append((x, y, z))
-                mini_field.append([v_squarex, y, z])
+                mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator3:
             if voxel > 0:

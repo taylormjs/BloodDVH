@@ -46,12 +46,12 @@ def make_dvh(bloods):
     return (bin_centers,dvh)
 
 
-def plot_dvh(bloods, blood_density=1):
+def plot_dvh(bloods, blood_density=1,dt):
     bin_centers, dvh = make_dvh(bloods)
     plt.figure()
     num_bloods = len(bloods)
     plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
-              "\nBlood Density: " + str(blood_density))
+              "\nBlood Density: " + str(blood_density) + "\ndt = " + str(dt))
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Volume (%)")
     plt.ylim(0, 100)

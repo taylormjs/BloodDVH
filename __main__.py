@@ -41,7 +41,7 @@ def main():
 
     print('-----Creating Blood DVH Plot-----')
     blood_density = simulator.blood_density
-    plot_dvh(blood_voxels, blood_density,dt)
+    plot_dvh(blood_voxels, dt, blood_density=blood_density)
     print('   Finished plotting   ')
 
 

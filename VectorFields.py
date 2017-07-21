@@ -1,4 +1,5 @@
 import numpy as np
+from Position import Position
 
 class VectorFields(object):
     '''TODO  - make this the superclass of const_vector_field. Make another

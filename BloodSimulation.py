@@ -110,7 +110,7 @@ class BloodSimulation(object):
                     out_blood_count += 1
                     # Generate new bloods, one blood unit for each blood unit out
             else:
-                vx, vy, vz = vector_field.get_v_around(x, y, z)
+                vx, vy, vz = self.velocity_field.get_v_around(x, y, z)
                 # try to get back to the vector field by going into the opposite directions
                 new_position = blood_position.get_new_position(-vx, -vy, -vz, self.dt)
                 #TODO - make sure blood voxels don't get caught in oscillatory motion, in and out of the blood vessel

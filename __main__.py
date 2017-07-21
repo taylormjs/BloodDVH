@@ -12,7 +12,7 @@ import random
 def main():
     print('-----Loading Velocity Fields-------')
     v_begin_time = time.time()
-    mat_v = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')  # read velocity field from mat file
+    mat_v = scipy.io.loadmat('VELOCITYVECSbloodflow.mat')  # read velocity field from mat file
     vx = np.array(mat_v['u'])
     vy = np.array(mat_v['v'])
     vz = np.array(mat_v['w'])
@@ -23,7 +23,7 @@ def main():
 
     print('-----Loading Dose Fields-----')
     d_begin_time = time.time()
-    mat_d = scipy.io.loadmat('Blood3dLiver/DOSESbloodflow.mat')  # read dose fields
+    mat_d = scipy.io.loadmat('DOSESbloodflow.mat')  # read dose fields
     dr = np.array(mat_d['dr'])
     # dr = np.random.rand(4, 4, 10)
     doses_object = Doses([dr], [1] ,[1])

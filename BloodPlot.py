@@ -51,7 +51,7 @@ def plot_dvh(bloods, dt, blood_density=1):
     plt.figure()
     num_bloods = len(bloods)
     plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
-              "\nBlood Density: " + str(blood_density) + "\ndt = " + str(dt))
+              "\nBlood Density: " + str(blood_density) + " dt = " + str(dt))
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Volume (%)")
     plt.ylim(0, 100)

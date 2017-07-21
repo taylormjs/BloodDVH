@@ -27,7 +27,7 @@ def main():
     dr = np.array(mat_d['dr'])
     # dr = np.random.rand(4, 4, 10)
     doses_object = Doses([dr], [1] ,[1])
-    blood_density = 2
+    blood_d = 2
     dt = 0.1
     d_end_time = time.time()
     print('   Time to load: ', d_end_time - d_begin_time)
@@ -41,7 +41,7 @@ def main():
 
     print('-----Creating Blood DVH Plot-----')
     blood_density = simulator.blood_density
-    plot_dvh(blood_voxels, dt, blood_density=blood_density)
+    plot_dvh(blood_voxels, dt, blood_density=blood_d)
     print('   Finished plotting   ')
 
 

@@ -101,12 +101,12 @@ class VectorFields(object):
         '''this method is used to decided where to generate new blood as one leave the field
         '''
         v_square = self.get_v_square()
-        surface1 = self.get_vz_field()[0, :, :]  # the surface where x = 0
-        surface2 = self.get_vz_field()[-1, :, :]  # x = -1
+        surface1 = self.get_vx_field()[0, :, :]  # the surface where x = 0
+        surface2 = self.get_vx_field()[-1, :, :]  # x = -1
         surface3 = self.get_vy_field()[:, 0, :]  # y = 0
         surface4 = self.get_vy_field()[:, -1, :]  # y = -1
-        surface5 = self.get_vx_field()[:, :, 0]  # z = 0
-        surface6 = self.get_vx_field()[:, :-1]  # z = -1
+        surface5 = self.get_vz_field()[:, :, 65]  # z = 0
+        surface6 = self.get_vz_field()[:, :, 114]  # z = -1
         list_of_index = []
         mini_field =[]
         v_iterator1 = np.nditer(surface1, flags=['multi_index'])
@@ -145,14 +145,14 @@ class VectorFields(object):
 
         for voxel in v_iterator5:
             if voxel > 0:
-                z = 0
+                z = 65
                 (x, y) = v_iterator5.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator6:
             if voxel < 0:
-                z = -1
+                z = 114
                 (x, y) = v_iterator6.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])

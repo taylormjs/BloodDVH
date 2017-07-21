@@ -35,7 +35,7 @@ def main():
     print('-----Running Simulation-----')
     simulator = BloodSimulation(velocity_field, doses_object, blood_density, dt)
     s_begin_time = time.time()
-    blood_voxels = simulator.simulate_blood_flow(plot_positions=True)
+    blood_voxels = simulator.simulate_blood_flow(plot_positions=False)
     s_end_time = time.time()
     print('   Time to complete simulation: ', s_end_time - s_begin_time)
 

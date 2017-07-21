@@ -46,7 +46,7 @@ def make_dvh(bloods):
     return (bin_centers,dvh)
 
 
-def plot_dvh(bloods, blood_density=1,dt):
+def plot_dvh(bloods, dt, blood_density=1):
     bin_centers, dvh = make_dvh(bloods)
     plt.figure()
     num_bloods = len(bloods)

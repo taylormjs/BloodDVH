@@ -15,10 +15,9 @@ def main():
     blood_density = int(input('Choose an integer value for the blood density (1-10): '))
     dt = float(input('Choose a value for the time step: '))
     decision = input('Would you like to vary the velocity field? (y/n): ')
-    multipliers = (1,1,1)
+    velocity_multiplier = (1,1,1)
     if decision == 'y':
-        multipliers = tuple(input('Choose multipliers for the velocity field in the form: x_mult, y_mult, z_mult: ')
-    x_mult, y_mult, z_mult = multipliers
+        velocity_multiplier = tuple(input('Choose multipliers for the velocity field in the form: x_mult, y_mult, z_mult: '))
     print('-----Loading Velocity Fields-------')
     v_begin_time = time.time()
     mat_v = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')  # read velocity field from mat file
@@ -26,7 +25,7 @@ def main():
     vy = np.array(mat_v['v'])
     vz = np.array(mat_v['w'])
     velocity_field = VectorFields(vx,vy,vz)
-    velocity_field.multiplyVelocityField(x_mult, y_mult, z_mult)
+    velocity_field.multiplyVelocityField(velocity_multiplier[0], velocity_multiplier[1], velocity_multiplier[2])
     # velocity_field = Const_vector_field(4, 4, 10, .01, .01, 20)
     v_end_time = time.time()
     print('   Time to load: ', v_end_time - v_begin_time)

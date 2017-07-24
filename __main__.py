@@ -12,11 +12,11 @@ import random
 def main():
     print('=============================================\n============Blood Simulator===================\n \
     =============================================')
-    blood_density = int(input('Choose an integer value for the blood density (1-10'))
-    dt = float(input('Choose a value for the time step'))
-    decision = input('Would you like to vary the velocity field? (y/n)')
+    blood_density = int(input('Choose an integer value for the blood density (1-10): '))
+    dt = float(input('Choose a value for the time step: '))
+    decision = input('Would you like to vary the velocity field? (y/n): ')
     if decision == 'y':
-        multipliers = tuple(input('Choose multipliers for the velocity field in the form: x_mult, y_mult, z_mult'))
+        multipliers = tuple(input('Choose multipliers for the velocity field in the form: x_mult, y_mult, z_mult: ')
     else:
         multipliers = (1, 1, 1)
     x_mult, y_mult, z_mult = multipliers

@@ -46,9 +46,9 @@ def make_dvh(bloods):
     return (bin_centers,dvh)
 
 
-def plot_dvh(bloods, dt, blood_density=1):
+def plot_dvh(bloods, dt, blood_density=1, save_plot=True):
     bin_centers, dvh = make_dvh(bloods)
-    plt.figure()
+    fig = plt.figure()
     num_bloods = len(bloods)
     plt.title("Dose-Volume Histogram\n Total # of Blood Voxels: " + str(num_bloods) + \
               "\nBlood Density: " + str(blood_density) + " dt = " + str(dt))
@@ -60,3 +60,11 @@ def plot_dvh(bloods, dt, blood_density=1):
     plt.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, c='green')
     plt.grid(True)
     plt.show()
+    if save_plot:
+        saveDVHPlot(fig)
+
+
+def saveDVHPlot(fig):
+    '''fig is a pyplot figure object, save_plot is a boolean'''
+    file_name = input('What would you like to name your DVH Plot for this Simulation?')
+    fig.savefig('DVHGraphs/' + str(file_name))

@@ -24,9 +24,8 @@ class BloodSimulation(object):
     def getInBloods(self):
         return self.in_bloods
 
-    def create_blood(self):
+    def create_blood(self, blood_density):
         '''
-
         Creates blood objects within each of the cells that has a nonzero velocity
         '''
         #TODO - include blood_density in this calculation?
@@ -34,19 +33,19 @@ class BloodSimulation(object):
         bloods =[]
         #v_sum is a composition of all vector fields to make sure blood is added to
         #every voxel with nonzero elements
-        v_sum = self.velocity_field.get_vx_field() + self.velocity_field.get_vy_field() \
-                + self.velocity_field.get_vz_field()
+        v_sum = self.velocity_field.v_square
         #iterate through every voxel within matrix
         v_iterator = np.nditer(v_sum, flags=['multi_index'])
         for voxel in v_iterator:
             if voxel != 0:
                 x,y,z = v_iterator.multi_index
-                x = x + np.random.random()
-                y = y + np.random.random()
-                z = z + np.random.random()
-                position = Position(x,y,z)
-                blood = Blood(position)
-                self.in_bloods.append(blood)
+                for d in range(blood_density):
+                    x = x + np.random.random()
+                    y = y + np.random.random()
+                    z = z + np.random.random()
+                    position = Position(x,y,z)
+                    blood = Blood(position)
+                    self.in_bloods.append(blood)
         return self.in_bloods #TODO - may not need to be returned
 
     def add_dose_for_allblood(self, dose_matrix):
@@ -152,7 +151,7 @@ class BloodSimulation(object):
         return self.in_bloods
 
 
-    def simulate_blood_flow(self, plot_positions = True):
+    def simulate_blood_flow(self, blood_density, plot_positions = True):
         '''generate blood objects and velocity vector fields, then runs the simulation
         NOTE - assumes the starting point is when the first field turns on
         dose_fields: a list of dose_field matrices
@@ -160,7 +159,7 @@ class BloodSimulation(object):
         time_gaps: the time between doses, while blood is still moving
         '''
         #initialize vector field, make # of blood voxels based on blood density
-        self.create_blood()
+        self.create_blood(blood_density)
         num_bloods = len(self.in_bloods)#total number of the blood
         (x_dim , y_dim ,z_dim) = self.velocity_field.get_dimensions()
         dose_fields = self.doses.get_dose_fields()

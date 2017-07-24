@@ -7,7 +7,7 @@ import scipy.io
 import numpy as np
 import time
 import random
-
+ioff()
 
 def main():
     print('=============================================\n============Blood Simulator===================\n \

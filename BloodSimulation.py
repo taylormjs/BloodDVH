@@ -161,7 +161,7 @@ class BloodSimulation(object):
         self.create_blood(blood_density)
         num_bloods = len(self.in_bloods)#total number of the blood
         (x_dim , y_dim ,z_dim) = self.velocity_field.get_dimensions()
-        dose_fields = self.doses.get_dose_fields()
+        dose_fields = self.doses.get_dose_field()
         times = self.doses.get_dose_time()
         time_gaps = self.doses.get_dose_time_gap()
         #out_bloods = [] - maybe delete

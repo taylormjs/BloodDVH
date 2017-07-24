@@ -15,10 +15,9 @@ def main():
     blood_density = int(input('Choose an integer value for the blood density (1-10): '))
     dt = float(input('Choose a value for the time step: '))
     decision = input('Would you like to vary the velocity field? (y/n): ')
+    multipliers = (1,1,1)
     if decision == 'y':
         multipliers = tuple(input('Choose multipliers for the velocity field in the form: x_mult, y_mult, z_mult: ')
-    else:
-        multipliers = (1, 1, 1)
     x_mult, y_mult, z_mult = multipliers
     print('-----Loading Velocity Fields-------')
     v_begin_time = time.time()
@@ -38,8 +37,6 @@ def main():
     dr = np.array(mat_d['dr'])
     # dr = np.random.rand(4, 4, 10)
     doses_object = Doses([dr], [1] ,[1])
-    blood_density = 2
-    dt = 0.1
     d_end_time = time.time()
     print('   Time to load: ', d_end_time - d_begin_time)
 
@@ -51,7 +48,7 @@ def main():
     print('   Time to complete simulation: ', s_end_time - s_begin_time)
 
     print('-----Creating Blood DVH Plot-----')
-    blood_density = simulator.blood_density
+    # blood_density = simulator.blood_density
     plot_dvh(blood_voxels, dt, blood_density=blood_density,save_plot=True)
     print('   Finished plotting and saving plot in DVHGraphs/   ')
 

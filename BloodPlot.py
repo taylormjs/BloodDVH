@@ -1,5 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from Blood import Blood
+from Position import Position
+
 plt.ioff()
 
 def make_pdf(bloods):
@@ -49,7 +52,7 @@ def make_dvh(bloods):
 
 def plot_dvh(bloods, dt, blood_density=1, save_plot=True):
     bin_centers, dvh = make_dvh(bloods)
-    plt.figure()
+    fig = plt.figure()
     num_bloods = len(bloods)
     plt.title("Dose-Volume Histogram\n Total # of Blood Voxels: " + str(num_bloods) + \
               "\nBlood Density: " + str(blood_density) + " dt = " + str(dt))
@@ -60,10 +63,13 @@ def plot_dvh(bloods, dt, blood_density=1, save_plot=True):
     plt.ylim(0, 100)
     plt.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, c='green')
     plt.grid(True)
-    plt.show()
     if save_plot:
         file_name = input('What would you like to name your DVH Plot for this Simulation? ')
-        plt.savefig('DVHGraphs/' + str(file_name) + '.png')
+        fig.savefig('DVHGraphs/' + str(file_name) + '.pdf')
+    plt.show()
+
+# blood = [Blood(Position(1,2,3),init_dose=1.2),Blood(Position(1,2,3),init_dose=2.2), Blood(Position(1,2,3),init_dose=1.9)]
+# plot_dvh(blood,.1)
 
 
 def saveDVHPlot(fig):

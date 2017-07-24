@@ -98,13 +98,17 @@ class VectorFields(object):
     def find_gen_field(self):
         '''this method is used to decided where to generate new blood as one leave the field
         '''
+        non_zero_indices = self.findNoneZeros()
+        (x_min,x_max) = non_zero_indices[0]
+        (y_min, y_max) = non_zero_indices[1]
+        (z_min, z_max) = non_zero_indices[2]
         v_square = vector_field.v_square
-        surface1 = self.get_vx_field()[0, :, :]  # the surface where x = 0
-        surface2 = self.get_vx_field()[-1, :, :]  # x = -1
-        surface3 = self.get_vy_field()[:, 0, :]  # y = 0
-        surface4 = self.get_vy_field()[:, -1, :]  # y = -1
-        surface5 = self.get_vz_field()[:, :, 0]  # z = 0
-        surface6 = self.get_vz_field()[:, :-1]  # z = -1
+        surface1 = self.get_vx_field()[x_min, :, :]  # the surface where x = 0
+        surface2 = self.get_vx_field()[x_max, :, :]  # x = -1
+        surface3 = self.get_vy_field()[:, y_min, :]  # y = 0
+        surface4 = self.get_vy_field()[:, y_max, :]  # y = -1
+        surface5 = self.get_vz_field()[:, :, z_min]  # z = 0
+        surface6 = self.get_vz_field()[:, :, z_max]  # z = -1
         list_of_index = []
         mini_field = []
         v_iterator1 = np.nditer(surface1, flags=['multi_index'])
@@ -115,37 +119,43 @@ class VectorFields(object):
         v_iterator6 = np.nditer(surface6, flags=['multi_index'])
         for voxel in v_iterator1:
             if voxel > 0:
-                (x, y, z) = v_iterator1.multi_index
+                x = x_min
+                (y, z) = v_iterator1.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator2:
             if voxel < 0:
-                (x, y, z) = v_iterator2.multi_index
+                x = x_max
+                (y, z) = v_iterator2.multi_index
                 list_of_index.append((x, y, z))
-                mini_field.append([v_squarex, y, z])
+                mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator3:
             if voxel > 0:
-                (x, y, z) = v_iterator3.multi_index
+                y = y_min
+                (x, z) = v_iterator3.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator4:
             if voxel < 0:
-                (x, y, z) = v_iterator4.multi_index
+                y = y_max
+                (x,  z) = v_iterator4.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator5:
             if voxel > 0:
-                (x, y, z) = v_iterator5.multi_index
+                z = z_min
+                (x, y) = v_iterator5.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append(v_square[x, y, z])
 
         for voxel in v_iterator6:
             if voxel < 0:
-                (x, y, z) = v_iterator6.multi_index
+                z = z_max
+                (x, y) = v_iterator6.multi_index
                 list_of_index.append((x, y, z))
                 mini_field.append([x, y, z])
 
@@ -173,12 +183,12 @@ class VectorFields(object):
 
     def findNoneZeros(self):
         (x_list,y_list,z_list) = np.nonzero(self.v_square != 0)
-        x_min = x_list[0]
-        y_min = y_list[0]
-        z_min = z_list[0]
-        x_max = x_list[-1]
-        y_max = y_list[-1]
-        z_max = z_list[-1]
+        x_min = min(x_list)
+        y_min = min(y_list)
+        z_min = min(z_list)
+        x_max = max(x_list)
+        y_max = max(y_list)
+        z_max = max(z_list)
         return [(x_min,x_max),(y_min,y_max),(z_min,z_max)]
 
     # def findNoneZeros(self):

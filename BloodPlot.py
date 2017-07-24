@@ -62,8 +62,9 @@ def plot_dvh(bloods, dt, blood_density=1, save_plot=True):
     plt.grid(True)
     plt.show()
     if save_plot:
-        file_name = input('What would you like to name your DVH Plot for this Simulation? ')
-        plt.savefig('DVHGraphs/' + str(file_name))
+        pass
+        # file_name = input('What would you like to name your DVH Plot for this Simulation? ')
+        # plt.savefig('DVHGraphs/' + str(file_name))
 
 
 def saveDVHPlot(fig):

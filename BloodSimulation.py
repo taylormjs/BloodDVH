@@ -176,7 +176,7 @@ class BloodSimulation(object):
                 #reshape the field if the dose field and the velocity field do not match
                 #dose_fields[i] = match_field(dose_fields[i],(x_dim , y_dim ,z_dim))
                 #TODO - maybe update match_field function later, but assume velocity_field and dose_field are same dimensions
-            self.blood_flow_with_beam(dose_fields[i], times[i]) #TODO - should this have an inboundary arg?
+            self.blood_flow_with_beam(dose_fields[i], times[i])
             try:
                 #then circulate blood without dose
                 self.blood_flow_no_beam(time_gaps[i]) #TODO - note an in_bloods_after_dose arg was here before

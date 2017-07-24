@@ -181,7 +181,8 @@ class VectorFields(object):
         x = position.get_x()
         y = position.get_y()
         z = position.get_z()
-        return (0 <= x < self.x_dim and 0 <= y < self.y_dim and 0 <= z < self.z_dim)
+        return (0 <= x < self.x_dim and 0 <= y < self.y_dim and 65 <= z < 115 )
+        #TODO z has been hard coded to work with the given matrix
         # less than or equal to? <=
 
     def __str__(self):

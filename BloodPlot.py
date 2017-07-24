@@ -70,10 +70,11 @@ def plot_dvh(bloods, dt, blood_density=1, save_plot=True):
         fig.savefig('DVHGraphs/' + str(file_name) + '.pdf')
     plt.show()
 
+
 # blood = [Blood(Position(1,2,3),init_dose=1.2),Blood(Position(1,2,3),init_dose=2.2), Blood(Position(1,2,3),init_dose=1.9)]
 # plot_dvh(blood,.1)
-
-
+    selected_blood_volume = (0.975*0.975*2.5*19469) # the volume of each voxel * the total number of voxel that cotains the blood
+    total_blood_volume = 5000000 #get this number from wikipedia
 def saveDVHPlot(fig):
     '''fig is a pyplot figure object, save_plot is a boolean'''
     pass

@@ -71,7 +71,7 @@ def graphAndSaveDVHPlots(data_sets, dt, num_bloods, styles_list, legend_list, bl
     plt.grid(True)
     plt.show()
     if save_plot:
-        dvh_fig.savefig()
+        dvh_fig.savefig('DVHGraphs/dvhplots.pdf')
 
 
 def graphAndSaveBodyAdjustedDVHPlots(data_sets, dt, blood_density=1, save_plot=True):

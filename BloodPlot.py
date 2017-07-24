@@ -50,10 +50,12 @@ def plot_dvh(bloods, dt, blood_density=1):
     bin_centers, dvh = make_dvh(bloods)
     plt.figure()
     num_bloods = len(bloods)
-    plt.title("Dose-Volume Histogram\n # of Blood Voxels: " + str(num_bloods) + \
+    plt.title("Dose-Volume Histogram\n Total # of Blood Voxels: " + str(num_bloods) + \
               "\nBlood Density: " + str(blood_density) + " dt = " + str(dt))
+    #TODO - find actual blood density
+    #TODO - find accurate dt
     plt.xlabel("Dose (Gray)")
-    plt.ylabel("Volume (%)")
+    plt.ylabel("Fraction of Voxels (%)")
     plt.ylim(0, 100)
     plt.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, c='green')
     plt.grid(True)

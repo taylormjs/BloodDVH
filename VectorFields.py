@@ -23,6 +23,11 @@ class VectorFields(object):
             self.x_dim, self.y_dim, self.z_dim = self.shape
             # create three 3-D velocity matrices, each containing the velocity in one direction x,y,or z
 
+    def multiplyNewVelocityField(self, x_mult, y_mult, z_mult):
+        self.vx_field *= x_mult
+        self.vy_field *= y_mult
+        self.vz_field *= z_mult
+
     def set_dose_matrix(self, dose_matrix):  # maybe take out the dim parameters later
         '''assume dose matrix a numpy matrix of the same dimensions as velocity field'''
         self.dose_matrix = dose_matrix

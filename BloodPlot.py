@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+plt.ioff()
 
 def make_pdf(bloods):
     '''make a probability density function which will graph blood dose vs.

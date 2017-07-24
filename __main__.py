@@ -1,7 +1,7 @@
 from VectorFields import *
 from BloodPlot import *
 from Position import Position
-from Doses import Doses
+from Dose import Dose
 from BloodSimulation import BloodSimulation
 import scipy.io
 import numpy as np
@@ -37,23 +37,33 @@ def main():
     mat_d = scipy.io.loadmat('Blood3dLiver/DOSESbloodflow.mat')  # read dose fields
     dr = np.array(mat_d['dr'])
     # dr = np.random.rand(4, 4, 10)
-    doses_object = Doses([dr], [1] ,[1])
+    doses = Dose([dr], [1] ,[1])
+    #TODO - allow user to vary dose
     d_end_time = time.time()
     print('   Time to load: ', d_end_time - d_begin_time)
 
     print('-----Running Simulation-----')
-    simulator = BloodSimulation(velocity_field, doses_object, blood_density, dt)
+    simulator = BloodSimulation(velocity_field, doses, blood_density, dt)
     s_begin_time = time.time()
     blood_voxels = simulator.simulate_blood_flow(blood_density, plot_positions=False)
+    num_bloods = len(blood_voxels)
     s_end_time = time.time()
     print('   Time to complete simulation: ', s_end_time - s_begin_time)
 
-    print('-----Creating Blood DVH Plot-----')
-    # blood_density = simulator.blood_density
-    plot_dvh(blood_voxels, dt, blood_density=blood_density, save_plot=True)
-    print('   Finished plotting and saving plot in DVHGraphs/   ')
+    print('-----Saving Blood DVH Data-----')
+    return (make_dvh(blood_voxels), num_bloods)
+
+
+    # print('-----Creating Blood DVH Plot-----')
+    # # blood_density = simulator.blood_density
+    # plot_dvh(blood_voxels, dt, blood_density=blood_density, save_plot=True)
+    # print('   Finished plotting and saving plot in DVHGraphs/   ')
 
 
 
 if __name__ == '__main__':
-    main()
+    data_sets = [i for i in range(5)]
+    num_bloods = [i for i in range(5)]
+    for i in range(5):
+        data_sets[i], num_bloods[i] = main()
+    graphAndSaveDVHPlots(data_sets, .01,num_bloods,['r','k','b','g','y'],['v=1','v=2','v=5','v=10','v=20'])

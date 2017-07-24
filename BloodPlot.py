@@ -52,28 +52,42 @@ def make_dvh(bloods):
     return (bin_centers,dvh)
 
 
-def plot_dvh(bloods, dt, blood_density=1, save_plot=True):
-    bin_centers, dvh = make_dvh(bloods)
-    fig = plt.figure()
-    num_bloods = len(bloods)
+def graphAndSaveDVHPlots(data_sets, dt, num_bloods, styles_list, legend_list, blood_density=1, save_plot=True):
+    '''data_set is a list of tuples, representing the outputs of make_dvh, style lists and legend_list should be the
+    same lengths as data_sets, each representing the color/style and name of each plot
+    outputs are (bin_centers,dvh)'''
+    dvhfig,ax = plt.subplots()
+    for i in range(len(data_sets)):
+        bin_centers, dvh = data_set[i]
+        ax.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100,styles_list[i],label=legend_list[i])
+        ax.legend()
+    # num_bloods = len(data_sets[0]) #TODO - double check this
     plt.title("Dose-Volume Histogram\n Total # of Blood Voxels: " + str(num_bloods) + \
               "\nBlood Density: " + str(blood_density) + " dt = " + str(dt))
-    #TODO - find actual blood density
-    #TODO - find accurate dt
+    # TODO - find actual blood density
     plt.xlabel("Dose (Gray)")
     plt.ylabel("Fraction of Voxels (%)")
     plt.ylim(0, 100)
-    plt.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, c='green')
     plt.grid(True)
-    if save_plot:
-        file_name = input('What would you like to name your DVH Plot for this Simulation? ')
-        fig.savefig('DVHGraphs/' + str(file_name) + '.pdf')
     plt.show()
+    if save_plot:
+        dvh_fig.savefig()
 
-# blood = [Blood(Position(1,2,3),init_dose=1.2),Blood(Position(1,2,3),init_dose=2.2), Blood(Position(1,2,3),init_dose=1.9)]
-# plot_dvh(blood,.1)
+
+def graphAndSaveBodyAdjustedDVHPlots(data_sets, dt, blood_density=1, save_plot=True):
+    pass
+
+
+def go():
+    blood = [Blood(Position(1,2,3),init_dose=1.2),Blood(Position(1,2,3),init_dose=2.2), Blood(Position(1,2,3),init_dose=1.9)]
+    bins, dvh = make_dvh(blood)
+    plt.plot(bins,dvh,c='blue')
+    plt.show()
+    plt.savefig('testgo.png')
 
 
 def saveDVHPlot(fig):
     '''fig is a pyplot figure object, save_plot is a boolean'''
     pass
+
+go()

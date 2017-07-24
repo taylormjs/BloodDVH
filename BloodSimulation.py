@@ -64,9 +64,8 @@ class BloodSimulation(object):
 
 
     def generate_new_blood(self,out_blood_per_t):
+        print('Blood leaving boundary. Generating New Blood.')
         generated_bloods = []
-        print('index list: ' ,len(self.index_list))
-        print('prob field: ', len(self.prob_field))
         tuple_ind = range(len(self.index_list))
         selected_ind = np.random.choice(tuple_ind,out_blood_per_t, p = self.prob_field)
         for i in selected_ind:
@@ -89,7 +88,6 @@ class BloodSimulation(object):
         in_boundary - the boundary the blood is flowing into, a list cotains x_low,x_high, y_low, y_high,.etc
         '''
         # Move all bloods within the field
-        print('  ---Bloods flow running---')
         out_blood_count = 0
         for blood in self.in_bloods:
             blood_position = blood.get_position()
@@ -135,6 +133,7 @@ class BloodSimulation(object):
             self.add_dose_for_allblood(dose_per_time)
             self.bloods_flow()
             t = t + self.dt
+            print(t)
 
         return self.in_bloods #TODO - may not need to be returned if self.in_bloods is an attribute (same with no beam method)
 
@@ -193,6 +192,6 @@ class BloodSimulation(object):
         print("# of bloods generated", (len(self.out_bloods) + len(self.in_bloods) - num_bloods))
         if plot_positions:
             print('-----plotting final blood positions-----')
-            plot_bloods_3d(self.in_bloods, c = 'b',m = 'o')# fianl positions of the bloods
+            plot_bloods_3d(self.in_bloods, c = 'b',m = 'o')# final positions of the bloods
 
         return self.in_bloods + self.out_bloods

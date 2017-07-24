@@ -5,7 +5,7 @@ class Dose(object):
     '''
 
     def __init__(self, dose_field, time_on, time_gap=[0]):
-        self.dose_field = dose_field  # a list of dose_field
+        self.dose_field = dose_field  # a list of dose_field matrices (2d or 3d)
         self.time_on = time_on
         self.time_gap = time_gap
         # assume that all the dose_field have the same dimentions
@@ -13,6 +13,11 @@ class Dose(object):
 
     def get_dose_field(self):
         return self.dose_field
+
+    def multiplyDoses(self):
+        for dose in range(len(self.dose_field)):
+            mult = float(input('How much would you like to vary the %s dose input?', dose))
+            self.dose_field[dose] *= mult
 
     def get_shape(self):
         return (self.x_dim, self.y_dim, self.z_dim)

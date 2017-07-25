@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import math
 import random
-from readDoses import *
+import time
 
 random.seed(0)
 
@@ -372,7 +372,7 @@ def make_dvh(blood_cells):
     
     
         
-def test_dvh(dose_fields, times, time_gaps, dt, n_bloods = 100):      
+def test_dvh(dose_fields, times, time_gaps, dt, n_bloods = 1000):
     blood_cells = simulate_blood_flow(dose_fields, times, time_gaps,dt, num_bloods = n_bloods)
     bin_centers, dvh = make_dvh(blood_cells)
     plt.figure()
@@ -381,6 +381,7 @@ def test_dvh(dose_fields, times, time_gaps, dt, n_bloods = 100):
     plt.ylabel("Volume (%)")
     plt.plot(bin_centers, dvh)
     plt.grid(True)
+    plt.show()
     
     
 def plot_positions(blood, color):
@@ -426,20 +427,27 @@ def animate_blood():
     pass
     
 
-if __name__ == '__main__': 
-    pass
+if __name__ == '__main__':
+    start = time.time()
+    dose1 = np.random.rand(1,120,120)
+    dose2 = np.random.rand(1, 120, 120)
+    doses = [dose1,dose2]
+    velocity = Const_vector_field(1,120,120,0,4,2)
+    test_dvh(doses, [1,1.5],[1] , 0.1, n_bloods=1000)
 #    num_blood_cells = 100
 #    test_pdf(doses, time_on, time_off, .1, n_bloods = 1000)
 #    test_cdf(doses, time_on, time_off, .1, n_bloods = 1000)
 #   start time
-    start = time.time()
-    for n in [100]:
-        test_dvh(doses, time_on, time_off, .01, n_bloods = n) 
-    
-    test_plot_positions(10, Const_vector_field(1,120,120,0,4,2), 20, .01)
+
+    # for n in [100]:
+    #     test_dvh(doses, time_on, time_off, .01, n_bloods = n)
+    #
+    # test_plot_positions(10, Const_vector_field(1,120,120,0,4,2), 20, .01)
     
     #stop time
+    print('hi')
     end = time.time()
     print("Time to run: ", (end-start), "seconds")
+    print('done')
 
         

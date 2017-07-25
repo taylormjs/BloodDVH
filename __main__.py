@@ -62,8 +62,8 @@ def main():
 
 
 if __name__ == '__main__':
-    data_sets = [i for i in range(1)]
-    num_bloods = [i for i in range(1)]
-    for i in range(1):
+    data_sets = [i for i in range(2)]
+    num_bloods = [i for i in range(2)]
+    for i in range(2):
         data_sets[i], num_bloods[i] = main()
-    graphAndSaveDVHPlots(data_sets, .1, num_bloods, ['r'], ['v=1'])
+    graphAndSaveDVHPlots(data_sets, .1, num_bloods, ['r','k'], ['v=1','v=5'])

@@ -58,7 +58,7 @@ def graphAndSaveDVHPlots(data_sets, dt, num_bloods, styles_list, legend_list, bl
     outputs are (bin_centers,dvh)'''
     dvhfig,ax = plt.subplots()
     for i in range(len(data_sets)):
-        bin_centers, dvh = data_set[i]
+        bin_centers, dvh = data_sets[i]
         ax.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100,styles_list[i],label=legend_list[i])
         ax.legend()
     # num_bloods = len(data_sets[0]) #TODO - double check this
@@ -97,4 +97,3 @@ def saveDVHPlot(fig):
     '''fig is a pyplot figure object, save_plot is a boolean'''
     pass
 
-go()

@@ -60,8 +60,8 @@ def runSimulation(blood_density, dt, multiplier):
     # print('   Finished plotting and saving plot in DVHGraphs/   ')
 
 def main():
-    blood_density = .01
-    dt = .1
+    blood_density = 1
+    dt = .01
     multiplier = [(1,1,1),(1,1,2),(1,1,5),(1,1,0.5)]
     bin_list = []
     dvh_list = []

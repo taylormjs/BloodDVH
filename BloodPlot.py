@@ -52,13 +52,14 @@ def make_dvh(bloods):
     return (bin_centers,dvh)
 
 
-def graphAndSaveDVHPlots(data_sets, styles_list, legend_list, save_plot=True):
+def graphAndSaveDVHPlots(data_sets, num_bloods_per_set, styles_list, legend_list, save_plot=True):
     '''data_set is a list of tuples, representing the outputs of make_dvh, style lists and legend_list should be the
     same lengths as data_sets, each representing the color/style and name of each plot
     outputs are (bin_centers,dvh)'''
     dvhfig,ax = plt.subplots()
     for i in range(len(data_sets)):
-        bin_centers, dvh = data_sets[i]
+        bin_centers, dvh = data_sets[i][0]
+        num_bloods = data_sets[i][1]
         ax.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, styles_list[i],label=legend_list[i])
         ax.legend()
     # num_bloods = len(data_sets[0]) #TODO - double check this
@@ -69,11 +70,10 @@ def graphAndSaveDVHPlots(data_sets, styles_list, legend_list, save_plot=True):
     plt.ylabel("Fraction of Voxels (%)")
     plt.ylim(0, 100)
     plt.grid(True)
-    plt.show()
     if save_plot:
         file_name = input('Type in the file name of your plot (without the ext): ')
         dvhfig.savefig('DVHGraphs/' + str(file_name) + '.pdf')
-
+    plt.show()
 
 
 

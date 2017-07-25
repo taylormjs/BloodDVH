@@ -50,7 +50,7 @@ def runSimulation(blood_density, dt, multiplier):
     print('   Time to complete simulation: ', s_end_time - s_begin_time)
 
     print('-----Saving Blood DVH Data-----')
-    return make_dvh(blood_voxels) #returns bincenters,dvh (x and y points)
+    return (make_dvh(blood_voxels),num_bloods) #returns bincenters,dvh (x and y points)
 
 
     # print('-----Creating Blood DVH Plot-----')
@@ -63,16 +63,18 @@ def main():
     dt = .1
     multiplier = [(1,1,1),(2,2,2)] #(5,5,5),(10,10,10)]
     data_outputs = []
+    data_lengths = []
     for m in range(len(multiplier)):
-        dvh_data = runSimulation(blood_density,dt,multiplier[m])
+        dvh_data, data_length = runSimulation(blood_density,dt,multiplier[m])
         data_outputs.append(dvh_data)
-    return data_outputs #a list of tuples, each containing (bins,dvh)
+        data_lengths.append((data_length))
+    return (data_outputs, data_lengths)  #a list of tuples, each containing (bins,dvh)
 
 
 
 
 
 if __name__ == '__main__':
-    data_sets = main()
+    data_sets, data_lengths = main()
     print(data_sets)
-    graphAndSaveDVHPlots(data_sets, ['r','k'], ['v=1','v=2'])
+    graphAndSaveDVHPlots(data_sets, data_lengths, ['r','k'], ['v=1','v=2'])

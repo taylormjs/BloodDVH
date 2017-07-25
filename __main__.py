@@ -10,7 +10,7 @@ import random
 
 
 def main():
-    print('=============================================\n============Blood Simulator===================\n \
+    print('=============================================\n============Blood Simulator==================\n \
     =============================================')
     blood_density = int(input('Choose an integer value for the blood density (1-10): '))
     dt = float(input('Choose a value for the time step: '))

@@ -59,7 +59,7 @@ def graphAndSaveDVHPlots(data_sets, dt, num_bloods, styles_list, legend_list, bl
     dvhfig,ax = plt.subplots()
     for i in range(len(data_sets)):
         bin_centers, dvh = data_sets[i]
-        ax.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100,styles_list[i],label=legend_list[i])
+        ax.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, styles_list[i],label=legend_list[i])
         ax.legend()
     # num_bloods = len(data_sets[0]) #TODO - double check this
     plt.title("Dose-Volume Histogram\n Total # of Blood Voxels: " + str(num_bloods) + \
@@ -71,7 +71,9 @@ def graphAndSaveDVHPlots(data_sets, dt, num_bloods, styles_list, legend_list, bl
     plt.grid(True)
     plt.show()
     if save_plot:
-        dvh_fig.savefig('DVHGraphs/dvhplots.pdf')
+        dvhfig.savefig('DVHGraphs/dvhplots.pdf')
+
+
 
 
 def graphAndSaveBodyAdjustedDVHPlots(data_sets, dt, blood_density=1, save_plot=True):

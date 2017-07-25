@@ -60,15 +60,14 @@ def graphAndSaveDVHPlots(bin_list, dvh_list, num_bloods_per_set, styles_list, le
     for i in range(len(num_bloods_per_set)):
         bin_centers, dvh = bin_list[i], dvh_list[i]
         num_bloods = num_bloods_per_set[i]
-        ax.plot(bin_centers,  dvh, styles_list[i], label=legend_list[i])
+        ax.plot(bin_centers,  (num_bloods - dvh), styles_list[i], label=legend_list[i])
         # ax.plot(bin_centers, (num_bloods - dvh) / num_bloods * 100, styles_list[i],label=legend_list[i])
         ax.legend()
     # num_bloods = len(data_sets[0]) #TODO - double check this
     plt.title("Blood Dose-Volume Histogram\n Total # of Blood Voxels: " + str(num_bloods_per_set))
     # TODO - find actual blood density
     plt.xlabel("Dose (Gray)")
-    plt.ylabel("Fraction of Voxels (%)")
-    plt.ylim(0, 100)
+    plt.ylabel("Number of Blood Voxels")
     plt.grid(True)
     if save_plot:
         file_name = input('Type in the file name of your plot (without the ext): ')

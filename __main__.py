@@ -9,17 +9,16 @@ import time
 import random
 
 
-def main():
-    print('=============================================\n============Blood Simulator==================\n \
-    =============================================')
-    blood_density = int(input('Choose an integer value for the blood density (1-10): '))
-    dt = float(input('Choose a value for the time step: '))
-    decision = input('Would you like to vary the velocity field? (y/n): ')
-    vx_multiplier, vy_multiplier, vz_multiplier = 1,1,1
-    if decision == 'y':
-        vx_multiplier = float(input('Choose multiplier for the velocity field in X Direction (Default is 1): '))
-        vy_multiplier = float(input('Choose multiplier for the velocity field in Y Direction (Default is 1: '))
-        vz_multiplier = float(input('Choose multiplier for the velocity field in Z Direction (Default is 1): '))
+def runSimulation(blood_density, dt, multiplier):
+    print('=============================================\n============Blood Simulator==================\n=============================================')
+    # blood_density = int(input('Choose an integer value for the blood density (1-10): '))
+    # dt = float(input('Choose a value for the time step: '))
+    # decision = input('Would you like to vary the velocity field? (y/n): ')
+    vx_multiplier, vy_multiplier, vz_multiplier = multiplier
+    # if decision == 'y':
+    #     vx_multiplier = float(input('Choose multiplier for the velocity field in X Direction (Default is 1): '))
+    #     vy_multiplier = float(input('Choose multiplier for the velocity field in Y Direction (Default is 1: '))
+    #     vz_multiplier = float(input('Choose multiplier for the velocity field in Z Direction (Default is 1): '))
     print('-----Loading Velocity Fields-------')
     v_begin_time = time.time()
     mat_v = scipy.io.loadmat('Blood3dLiver/VELOCITYVECSbloodflow.mat')  # read velocity field from mat file
@@ -51,7 +50,7 @@ def main():
     print('   Time to complete simulation: ', s_end_time - s_begin_time)
 
     print('-----Saving Blood DVH Data-----')
-    return (make_dvh(blood_voxels), num_bloods)
+    return make_dvh(blood_voxels) #returns bincenters,dvh (x and y points)
 
 
     # print('-----Creating Blood DVH Plot-----')
@@ -59,11 +58,21 @@ def main():
     # plot_dvh(blood_voxels, dt, blood_density=blood_density, save_plot=True)
     # print('   Finished plotting and saving plot in DVHGraphs/   ')
 
+def main():
+    blood_density = 1
+    dt = .1
+    multiplier = [(1,1,1),(2,2,2)] #(5,5,5),(10,10,10)]
+    data_outputs = []
+    for m in range(len(multiplier)):
+        dvh_data = runSimulation(blood_density,dt,multiplier[m])
+        data_outputs.append(dvh_data)
+    return data_outputs #a list of tuples, each containing (bins,dvh)
+
+
+
 
 
 if __name__ == '__main__':
-    data_sets = [i for i in range(2)]
-    num_bloods = [i for i in range(2)]
-    for i in range(2):
-        data_sets[i], num_bloods[i] = main()
-    graphAndSaveDVHPlots(data_sets, .1, num_bloods, ['r','k'], ['v=1','v=5'])
+    data_sets = main()
+    print(data_sets)
+    graphAndSaveDVHPlots(data_sets, ['r','k'], ['v=1','v=2'])

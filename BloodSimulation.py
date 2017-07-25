@@ -109,7 +109,7 @@ class BloodSimulation(object):
             else:
                 vx, vy, vz = self.velocity_field.get_v_around(x, y, z)
                 # try to get back to the vector field by going into the opposite directions
-                new_position = blood_position.get_new_position(-vx, -vy, -vz, self.dt)
+                new_position = blood_position.get_new_position(-vx*10, -vy*10, -vz*10, self.dt)
                 #TODO - make sure blood voxels don't get caught in oscillatory motion, in and out of the blood vessel
                 if self.velocity_field.is_position_in_vector_field(new_position):
                     blood.find_new_position(new_position)

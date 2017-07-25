@@ -44,7 +44,7 @@ def runSimulation(blood_density, dt, multiplier):
     print('-----Running Simulation-----')
     simulator = BloodSimulation(velocity_field, doses, blood_density, dt)
     s_begin_time = time.time()
-    blood_voxels = simulator.simulate_blood_flow(blood_density, plot_positions=False)
+    blood_voxels = simulator.simulate_blood_flow(blood_density, plot_positions=True)
     num_bloods = len(blood_voxels)
     s_end_time = time.time()
     print('   Time to complete simulation: ', s_end_time - s_begin_time)
@@ -62,7 +62,7 @@ def runSimulation(blood_density, dt, multiplier):
 def main():
     blood_density = 1
     dt = .1
-    multiplier = [(1,1,1),(1,1,2),(1,1,5),(1,1,0.5)]
+    multiplier = [(1,1,1)] #,(1,1,2),(1,1,5),(1,1,0.5)]
     bin_list = []
     dvh_list = []
     data_lengths = []
@@ -80,5 +80,5 @@ def main():
 if __name__ == '__main__':
     bin_list, dvh_list, data_lengths = main()
     #((bins,centers),num_bloods)
-    graphAndSaveDVHPlots(bin_list, dvh_list, data_lengths, ['r','k','b','y'], ['v=1', 'v=2', 'v=5', 'v=0.5'])
-    print('dt = .01')
+    graphAndSaveDVHPlots(bin_list, dvh_list, data_lengths, ['r'], ['v=1'])
+    print('dt = .1')

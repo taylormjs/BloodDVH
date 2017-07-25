@@ -51,3 +51,4 @@ def plot_bloods_3d(bloods, c = 'r',m ='o'):
     ax.set_ylabel('Y ')
     ax.set_zlabel('Z ')
     plt.show()
+    fig.savefig('DVHGraphs/plot_bloods_3d.pdf')

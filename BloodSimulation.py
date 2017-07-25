@@ -57,7 +57,7 @@ class BloodSimulation(object):
         for i in self.in_bloods:
             try:
                 if self.velocity_field.is_position_in_dose_field(i.get_position()):
-                    i.current_dose_level(dose_matrix, self.dt)
+                    i.current_dose_level(dose_matrix)
                     i.add_dose()
             except IndexError:
                 pass
@@ -127,9 +127,9 @@ class BloodSimulation(object):
         a dose_matrix is a two dimension matrix of the dose at each point in a
         2d space
         """
-        t = 0;
+        t = 0
+        dose_per_time = dose_matrix * self.dt / total_time  # dose_per_time a dose matrix per unit time
         while t <= total_time:
-            dose_per_time = dose_matrix * self.dt / total_time  # dose_per_time a dose matrix per unit time
             self.add_dose_for_allblood(dose_per_time)
             self.bloods_flow()
             t = t + self.dt

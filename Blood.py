@@ -20,7 +20,7 @@ class Blood(object):
     def find_new_position(self, position):
         self.position = position
 
-    def current_dose_level(self, dose_matrix, dt):
+    def current_dose_level(self, dose_matrix):
         '''return dose that each unit of blood gets in a dose_matrix
         '''
         self.dose_reciving = 0
@@ -28,7 +28,7 @@ class Blood(object):
         x = int(position.x)  # TODO - these may need to be getter functions later
         y = int(position.y)  # ie y = position.get_y()
         z = int(position.z)
-        dose = dose_matrix[x][y][z] * dt
+        dose = dose_matrix[x][y][z]
         self.dose_reciving = dose
 
     def __str__(self):

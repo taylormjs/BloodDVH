@@ -199,7 +199,7 @@ def make_blood(num_blood_cells,x_min = 0, y_min = 0, z_min = 0, \
     return bloods
 
   
-def add_dose_for_allblood(in_bloods,dose_matrix):
+def add_dose_for_allblood(in_bloods,dose_matrix,dt):
     '''
     add a constant dose of radiation to all blood within the radiation beam
     blood - a list of blood voxel objects
@@ -208,7 +208,7 @@ def add_dose_for_allblood(in_bloods,dose_matrix):
     for i in in_bloods:
         try:
         #TODO - add condition - only if i is in beam
-            i.current_dose_level(dose_matrix)
+            i.current_dose_level(dose_matrix,dt)
             i.add_dose()
         except IndexError: #TODO - maybe modify this later
             pass
@@ -252,7 +252,7 @@ def blood_flow_with_beam(in_bloods, out_bloods, vector_field,dose_matrix,total_t
     """
     t = 0;
     while t <= total_time:
-        add_dose_for_allblood(in_bloods,dose_matrix) 
+        add_dose_for_allblood(in_bloods,dose_matrix,dt)
         bloods_flow(in_bloods, out_bloods, vector_field,dt)
         t = t + dt
         

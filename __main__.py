@@ -62,7 +62,7 @@ def runSimulation(blood_density, dt, multiplier):
 def main():
     blood_density = 1
     dt = .01
-    multiplier = [(1,1,1),(1,1,2),(1,1,5),(1,1,10)]
+    multiplier = [(1,1,1),(1,1,2),(1,1,5),(1,1,0.5)]
     bin_list = []
     dvh_list = []
     data_lengths = []
@@ -80,4 +80,5 @@ def main():
 if __name__ == '__main__':
     bin_list, dvh_list, data_lengths = main()
     #((bins,centers),num_bloods)
-    graphAndSaveDVHPlots(bin_list, dvh_list, data_lengths, ['r','k','b','y'], ['v=1', 'v=2', 'v=5', 'v=10'])
+    graphAndSaveDVHPlots(bin_list, dvh_list, data_lengths, ['r','k','b','y'], ['v=1', 'v=2', 'v=5', 'v=0.5'])
+    print('dt = .01')

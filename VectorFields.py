@@ -88,7 +88,7 @@ class VectorFields(object):
         return new_position
 
 
-    def findBestNewPosition(self, index_list, position)
+    def findBestNewPosition(self, index_list, position):
         best_difference = 100
         best_index = index_list[0]
         for index in index_list:

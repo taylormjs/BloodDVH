@@ -64,7 +64,7 @@ class VectorFields(object):
 
         return surrounding_shell #or should this be a yield?
 
-    def searchShellAndGetNewPosition(self,position,previous_position):
+    def searchShellAndGetNewPosition(self,position):
         '''takes in the position assumed to be outside of the velocity field, finds the nearest point with a
         nonzero velocity, and returns a position at that point (assumed to be in the velocity field)
         Returns None if no position can be found within the two shells immediately around the cell.'''

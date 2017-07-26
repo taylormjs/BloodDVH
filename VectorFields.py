@@ -100,7 +100,7 @@ class VectorFields(object):
                 best_index = index
             else:
                 continue
-        return Position(best_index)
+        return Position((best_index))
 
 
 

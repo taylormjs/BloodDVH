@@ -62,7 +62,7 @@ def runSimulation(blood_density, dt, multiplier):
 def main():
     blood_density = 1
     dt = .1
-    multiplier = [(1,1,1)],(1,1,0.5),(1,1,3)] #,(1,1,0.5)]
+    multiplier = [(1,1,1),(1,1,0.5),(1,1,3)] #,(1,1,0.5)]
     bin_list = []
     dvh_list = []
     data_lengths = []

@@ -73,19 +73,36 @@ class VectorFields(object):
         if v_magnitude_new != 0:
             return Position(i + random.random(), j + random.random(), k + random.random())
         shell_num = 1
-        while v_magnitude_new == 0:
+        nonzero_velocity_list = []
+        while nonzero_velocity_list == []:
             surrounding_shell = self.get_adjacent_cells(i, j, k, shell_num)
             if surrounding_shell != []:
                 for i, j, k in surrounding_shell:
-                    v_magnitude_new = self.v_square[i][j][k]
-                    if v_magnitude_new != 0:
-                        print((i,j,k))
-                        return Position(i + random.random(), j + random.random(), k + random.random())
-                    else:
-                        continue
-                shell_num += 1
+                    if self.v_square[i][j][k] != 0:
+                        nonzero_velocity_list.append((i,j,k)) #add all viable options to a list
             else:
+                print("No near position found")
                 return None
+            shell_num += 1
+        new_position = self.findBestNewPosition(nonzero_velocity_list, position)
+        return new_position
+
+
+    def findBestNewPosition(self, index_list, position)
+        best_difference = 100
+        best_index = index_list[0]
+        for index in index_list:
+            x1,y1,z1 = position.get_position() #a tuple of exact position
+            x, y, z = index
+            difference = (x1 - x)**2 + (y1 - y)**2 + (z1 - z)**2
+            if difference < best_difference:
+                best_difference = difference
+                best_index = index
+            else:
+                continue
+        return Position(best_index)
+
+
 
 
     def get_v_around(self, x, y, z):

@@ -1,5 +1,6 @@
 import numpy as np
 from Position import Position
+import random
 
 class VectorFields(object):
     '''TODO  - make this the superclass of const_vector_field. Make another
@@ -48,6 +49,44 @@ class VectorFields(object):
 
     def get_vz_at_position(self, x, y, z):
         return self.vz_field[int(x)][int(y)][int(z)]
+
+
+    def get_adjacent_cells(self,x_coord,y_coord,z_coord,shell_num): #shell_num should usually be 1 (positive int)
+        surrounding_shell = []
+        if shell_num == 1:
+            for x, y, z in [(x_coord + i, y_coord + j, z_coord + k) for i in (-shell_num, 0, shell_num) for j in (-shell_num, 0, shell_num) \
+                        for k in (-shell_num, 0, shell_num) if i != 0 or j != 0 or k != 0]:  # this is a list of indices surrouding a point
+                surrounding_shell.append((x,y,z))
+        elif shell_num == 2:
+            for x, y, z in [(x_coord + i, y_coord + j, z_coord + k) for i in (-2, -1, 0, 1, 2) for j in (-2, -1, 0, 1, 2) \
+                            for k in (-2, -1, 0, 1, 2) if i != 0 or j != 0 or k != 0]:
+                surrounding_shell.append((x,y,z))
+
+        return surrounding_shell #or should this be a yield?
+
+    def searchShellAndGetNewPosition(self,position,previous_position):
+        '''takes in the position assumed to be outside of the velocity field, finds the nearest point with a
+        nonzero velocity, and returns a position at that point (assumed to be in the velocity field)
+        Returns None if no position can be found within the two shells immediately around the cell.'''
+        i,j,k = position.get_index_of_position() #TODO - make sure this is the actual cell the blood is in, NOT one off
+        v_magnitude_new = self.v_square[i][j][k]
+        if v_magnitude_new != 0:
+            return Position(i + random.random(), j + random.random(), k + random.random())
+        shell_num = 1
+        while v_magnitude_new == 0:
+            surrounding_shell = self.get_adjacent_cells(i, j, k, shell_num)
+            if surrounding_shell != []:
+                for i, j, k in surrounding_shell:
+                    v_magnitude_new = self.v_square[i][j][k]
+                    if v_magnitude_new != 0:
+                        print((i,j,k))
+                        return Position(i + random.random(), j + random.random(), k + random.random())
+                    else:
+                        continue
+                shell_num += 1
+            else:
+                return None
+
 
     def get_v_around(self, x, y, z):
         '''find the velocity of its closet neighbors and return the average'''

@@ -22,6 +22,9 @@ class Position(object):
     def get_z(self):
         return self.z
 
+    def get_index_of_position(self):
+        return (int(self.x),int(self.y),int(self.z))
+
     def get_new_position(self, vx, vy, vz, dt):  # change to units rather than actual distance
         # dt is the change in time dt
         old_x, old_y, old_z = self.get_x(), self.get_y(), self.get_z()

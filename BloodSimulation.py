@@ -79,7 +79,7 @@ class BloodSimulation(object):
         return generated_bloods
 
 
-    def bloods_flow(self): #TODO - should these be parameters here? Test if too slow later
+    def bloods_flow(self):
         '''Updates the positions of all the bloods still within the vector field
         in one time step with length dt (a float)
         in_bloods - those still within defined vector field
@@ -102,16 +102,17 @@ class BloodSimulation(object):
                     blood.find_new_position(new_position)
                 else:
                     # move that blood from one list to another (all_bloods -> leaving_blods)
-                    self.out_bloods.append(blood) #TODO - this will present a problem later if blood leaves out the walls
+                    self.out_bloods.append(blood)
                     self.in_bloods.remove(blood)
                     out_blood_count += 1
                     # Generate new bloods, one blood unit for each blood unit out
             else:
-                vx, vy, vz = self.velocity_field.get_v_around(x, y, z)
-                # try to get back to the vector field by going into the opposite directions
-                new_position = blood_position.get_new_position(-vx*10, -vy*10, -vz*10, self.dt)
-                #TODO - make sure blood voxels don't get caught in oscillatory motion, in and out of the blood vessel
-                if self.velocity_field.is_position_in_vector_field(new_position):
+                new_position = self.velocity_field.searchShellAndGetNewPosition(blood_position)
+                if new_position == None: #If the search result returns None, just remove
+                    self.in_bloods.remove(blood)
+                    self.out_bloods.append(blood)
+                    out_blood_count += 1
+                elif self.velocity_field.is_position_in_vector_field(new_position):
                     blood.find_new_position(new_position)
                 else:
                     # move that blood from one list to another (all_bloods -> leaving_bloods)
@@ -167,7 +168,7 @@ class BloodSimulation(object):
         #out_bloods = [] - maybe delete
         if plot_positions:
             print('-----plotting initial blood positions-----')
-            plot_bloods_3d(self.in_bloods, c = 'r', m = '^')# initial position of the bloods
+            plot_bloods_3d(self.in_bloods, c = 'r', m = '^') # initial position of the bloods
         for i in range(len(times)):
                 #Add dose
             if (dose_fields[i].shape) != (x_dim , y_dim ,z_dim):

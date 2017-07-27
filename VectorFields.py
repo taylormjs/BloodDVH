@@ -64,7 +64,7 @@ class VectorFields(object):
 
         return surrounding_shell #or should this be a yield?
 
-    def searchShellAndGetNewPosition(self,position):
+    def searchShellAndGetNewPosition(self,position, old_position):
         '''takes in the position assumed to be outside of the velocity field, finds the nearest point with a
         nonzero velocity, and returns a position at that point (assumed to be in the velocity field)
         Returns None if no position can be found within the two shells immediately around the cell.'''
@@ -78,7 +78,7 @@ class VectorFields(object):
             surrounding_shell = self.get_adjacent_cells(i, j, k, shell_num)
             if surrounding_shell != []:
                 for i, j, k in surrounding_shell:
-                    if self.v_square[i][j][k] != 0:
+                    if self.v_square[i][j][k] != 0 and (i,j,k) != old_position.get_index_of_position():
                         nonzero_velocity_list.append((i,j,k)) #add all viable options to a list
             else:
                 print("No near position found")
@@ -90,16 +90,17 @@ class VectorFields(object):
 
     def findBestNewPosition(self, index_list, position):
         best_difference = 100
-        best_index = index_list[0]
+        best_x,best_y,best_z = index_list[0]
         for index in index_list:
-            x1,y1,z1 = position.get_position() #a tuple of exact position
-            x, y, z = index
-            difference = (x1 - x)**2 + (y1 - y)**2 + (z1 - z)**2
-            if difference < best_difference:
-                best_difference = difference
-                best_x, best_y, best_z = index
-            else:
-                continue
+            if position.get_index_of_position() != index: #TODO - maybe consider removing this
+                x1,y1,z1 = position.get_position() #a tuple of exact position
+                x, y, z = index
+                difference = (x1 - x)**2 + (y1 - y)**2 + (z1 - z)**2
+                if difference < best_difference:
+                    best_difference = difference
+                    best_x, best_y, best_z = index
+                else:
+                    continue
         return Position(best_x, best_y, best_z)
 
 

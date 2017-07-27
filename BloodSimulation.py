@@ -64,7 +64,7 @@ class BloodSimulation(object):
 
 
     def generate_new_blood(self,out_blood_per_t):
-        print('Blood leaving boundary. Generating New Blood.')
+        # print('Blood leaving boundary. Generating New Blood.')
         generated_bloods = []
         tuple_ind = range(len(self.index_list))
         selected_ind = np.random.choice(tuple_ind,out_blood_per_t, p = self.prob_field)
@@ -107,7 +107,8 @@ class BloodSimulation(object):
                     out_blood_count += 1
                     # Generate new bloods, one blood unit for each blood unit out
             else:
-                new_position = self.velocity_field.searchShellAndGetNewPosition(blood_position)
+                temp_new_position = blood_position.get_new_position(vx, vy, vz, self.dt)
+                new_position = self.velocity_field.searchShellAndGetNewPosition(temp_new_position, blood_position)
                 if new_position == None: #If the search result returns None, just remove
                     self.in_bloods.remove(blood)
                     self.out_bloods.append(blood)

@@ -97,10 +97,10 @@ class VectorFields(object):
             difference = (x1 - x)**2 + (y1 - y)**2 + (z1 - z)**2
             if difference < best_difference:
                 best_difference = difference
-                best_index = index
+                best_x, best_y, best_z = index
             else:
                 continue
-        return Position((best_index))
+        return Position(best_x, best_y, best_z)
 
 
 

@@ -83,5 +83,6 @@ def main():
 if __name__ == '__main__':
     bin_list, dvh_list, data_lengths = main()
     #((bins,centers),num_bloods)
-    graphAndSaveDVHPlots(bin_list, dvh_list, data_lengths, ['k','b','g','r'], ['Speed = 1', 'Speed = 2', 'Speed = 5', 'Speed = 10'])
+    graphAndSaveDVHPlots(bin_list, dvh_list, data_lengths, ['k','b','g','r'], \
+                         ['Speed = 1', 'Speed = 2', 'Speed = 5', 'Speed = 10'])
     print('dt = .01')

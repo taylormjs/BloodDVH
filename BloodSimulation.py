@@ -96,6 +96,7 @@ class BloodSimulation(object):
             vy = self.velocity_field.get_vy_at_position(x, y, z)
             vz = self.velocity_field.get_vz_at_position(x, y, z)
             if (vx != 0) or ((vy != 0)) or ((vz != 0)):
+            # if self.velocity_field.is_position_in_vector_field(blood_position:)
                 new_position = blood_position.get_new_position(vx, vy, vz,self.dt)
                 # if new position still in field, update position
                 if self.velocity_field.is_position_in_vector_field(new_position):

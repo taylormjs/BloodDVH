@@ -46,8 +46,3 @@ class Position(object):
     def __str__(self):
         return "Position: " + str((self.x, self.y, self.z))
         # '(' + str(self.x) + str(self.y) + str(self.z) + ')
-
-
-
-pos = Position(1.2,2.5,3.3)
-print(pos.get_index_of_position())

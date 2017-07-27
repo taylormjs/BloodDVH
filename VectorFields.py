@@ -235,10 +235,11 @@ class VectorFields(object):
     def is_position_in_vector_field(self, position):
         '''Returns true if position is within the blood vessel
         '''
-        x = position.get_x()
-        y = position.get_y()
-        z = position.get_z()
-        return (0 <= x < self.x_dim and 0 <= y < self.y_dim and 65 <= z < 115 )
+        x = position.get_index_of_position()
+        y = position.get_index_of_position()
+        z = position.get_index_of_position()
+        return self.v_square[x][y][z] != 0
+        # return (0 <= x < self.x_dim and 0 <= y < self.y_dim and 65 <= z < 115 )
         #TODO z has been hard coded to work with the given matrix
         # less than or equal to? <=
 
